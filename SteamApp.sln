@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamDomain", "SteamDomain\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamData", "SteamData\SteamData.csproj", "{6523B315-69F3-49E9-86DC-21A7C45425A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLogicTests", "DataLogicTests\DataLogicTests.csproj", "{51590C91-0403-49E1-AD49-4EF9B0F93ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
