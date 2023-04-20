@@ -15,14 +15,14 @@ namespace SteamAPI
 
         public async Task<List<GameDTO>> GetAllGames()
         {
-            var gameList = await _context.Games.ToListAsync();
-            var gameDTOList = new List<GameDTO>();
-            foreach (var game in gameList)
-            {
-                gameDTOList.Add(GameToDTO(game));
+                var gameList = await _context.Games.ToListAsync();
+                var gameDTOList = new List<GameDTO>();
+                foreach (var game in gameList)
+                {
+                    gameDTOList.Add(GameToDTO(game));
+                }
+                return gameDTOList;
             }
-            return gameDTOList;
-        }
 
         public async Task<GameDTO> GetGameById(int id)
         {
@@ -52,7 +52,7 @@ namespace SteamAPI
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (game == null)
+                if (!_context.Games.Any(g => g.GameId == game.GameId))
                 {
                     return false;
                 }

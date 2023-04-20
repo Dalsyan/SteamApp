@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SteamAPI;
+using SteamAPI.Models;
 using SteamData;
 using SteamDomain;
 
@@ -43,19 +44,57 @@ namespace DataLogicTests
         [TestMethod]
         public void PostGame()
         {
+            var builder = new DbContextOptionsBuilder<SteamContext>();
+            builder.UseInMemoryDatabase(
+                Guid.NewGuid().ToString());
 
+            using (var context = new SteamContext(builder.Options))
+            {
+                var game = new Game { Title = "test", Gender = "gTest" };
+                context.Games.Add(game);
+
+                Assert.AreEqual(EntityState.Added, context.Entry(game).State);
+            }
         }
-
         [TestMethod]
         public void PutGame()
         {
+            var builder = new DbContextOptionsBuilder<SteamContext>();
+            builder.UseInMemoryDatabase(
+                Guid.NewGuid().ToString());
+            int seededId = SeedOneGame(builder.Options);
 
+            using (var context = new SteamContext(builder.Options))
+            {
+                var gameDTO = new GameDTO { Title = "test", Gender = "gTest" };
+                var bizlogic = new DataLogic(context);
+                var canUpdate =  bizlogic.UpdateGame(gameDTO).GetAwaiter().GetResult();
+                var gameRetrieved = bizlogic.GetGameById(gameDTO.GameId);
+                if (canUpdate)
+                {
+                    gameRetrieved.Result.Title = gameDTO.Title;
+                    gameRetrieved.Result.Gender = gameDTO.Gender;
+                }
+
+                Assert.AreEqual(gameRetrieved.Result.Title, gameDTO.Title);
+            }
         }
 
         [TestMethod]
         public void DeleteGame()
         {
+            var builder = new DbContextOptionsBuilder<SteamContext>();
+            builder.UseInMemoryDatabase(
+                Guid.NewGuid().ToString());
+            int seedCount = SeedManyGames(builder.Options);
 
+            using (var context = new SteamContext(builder.Options))
+            {
+                var bizlogic = new DataLogic(context);
+                var gameRetrieved = bizlogic.DeleteGame(3);
+
+                Assert.AreEqual(EntityState.Deleted, gameRetrieved.Status);
+            }
         }
 
         private int SeedOneGame(DbContextOptions<SteamContext> options)
