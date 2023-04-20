@@ -12,17 +12,22 @@ namespace SteamAPI
         {
             _context = context;
         }
+        public DataLogic()
+        {
+            var option = new DbContextOptions<SteamContext>();
+            _context = new SteamContext(option);
+        }
 
         public async Task<List<GameDTO>> GetAllGames()
         {
-                var gameList = await _context.Games.ToListAsync();
-                var gameDTOList = new List<GameDTO>();
-                foreach (var game in gameList)
-                {
-                    gameDTOList.Add(GameToDTO(game));
-                }
-                return gameDTOList;
+            var gameList = await _context.Games.ToListAsync();
+            var gameDTOList = new List<GameDTO>();
+            foreach (var game in gameList)
+            {
+                gameDTOList.Add(GameToDTO(game));
             }
+            return gameDTOList;
+        }
 
         public async Task<GameDTO> GetGameById(int id)
         {
