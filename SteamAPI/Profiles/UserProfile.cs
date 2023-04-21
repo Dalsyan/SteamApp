@@ -7,6 +7,8 @@ namespace SteamAPI.Profiles
         public UserProfile()
         {
             CreateMap<SteamDomain.User, Models.UserDTO>();
+            CreateMap<Models.UserForCreationDTO, SteamDomain.User>();
+            CreateMap<Models.UserForUpdateDTO, SteamDomain.User>();
         }
     }
 }

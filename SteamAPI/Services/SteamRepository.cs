@@ -58,6 +58,19 @@ namespace SteamAPI.Services
         {
             return await _context.Users.AnyAsync(u => u.UserId == userId);
         }
+        public async Task AddUserAsync(User user)
+        {
+            if (!GameExistsAsync(user.UserId).Result)
+            {
+                _context.Users.Add(user);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteUserAsync(User user)
+        {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
         #endregion
     }
 }

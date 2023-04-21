@@ -8,14 +8,14 @@ using SteamDomain;
 
 namespace SteamAPI.Controllers
 {
-    [Route("api/games")]
+    [Route("api/users")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ISteamRepository _steamRepo;
         private readonly IMapper _mapper;
 
-        public GamesController(ISteamRepository steamRepository, IMapper mapper)
+        public UsersController(ISteamRepository steamRepository, IMapper mapper)
         {
             _steamRepo = steamRepository ??
                 throw new ArgumentNullException(nameof(steamRepository));
@@ -23,68 +23,72 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/games
+        // GET: api/users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            var games = await _steamRepo.GetAllGamesAsync();
-            return Ok(_mapper.Map<IEnumerable<GameDTO>>(games));
+            var users = await _steamRepo.GetAllUsersAsync();
+            return Ok(_mapper.Map<IEnumerable<UserDTO>>(users));
         }
 
-        // GET: api/games/5
+        // GET: api/users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameDTO>> GetGame(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
-            var game = await _steamRepo.GetGameAsync(id);
-            if (game == null) 
+            var user = await _steamRepo.GetUserAsync(id);
+            if (user == null) 
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GameDTO>(game));
+            return Ok(_mapper.Map<UserDTO>(user));
         }
 
-        // PUT: api/games/5
+        // PUT: api/users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutGame(int id, GameForUpdateDTO gameDTO)
+        public async Task<ActionResult> PutUser(int id, UserForUpdateDTO userDTO)
         {
-            if (!await _steamRepo.GameExistsAsync(id))
+            if (!await _steamRepo.UserExistsAsync(id))
             {
                 return NotFound();
             }
 
-            var game = await _steamRepo.GetGameAsync(id);
-            _mapper.Map(gameDTO, game);
+            var user = await _steamRepo.GetUserAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(userDTO, user);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // POST: api/games
+        // POST: api/users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult> PostGame(GameForCreationDTO game)
+        public async Task<ActionResult> PostUser(UserForCreationDTO user)
         {
-            var finalGame = _mapper.Map<Game>(game);
+            var finalUser = _mapper.Map<User>(user);
 
-            await _steamRepo.AddGameAsync(finalGame);
+            await _steamRepo.AddUserAsync(finalUser);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/games/5
+        // DELETE: api/users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGame(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            var game = _steamRepo.GetGameAsync(id).Result;
-            if (game == null)
+            var user = _steamRepo.GetUserAsync(id).Result;
+            if (user == null)
             {
                 return NotFound();
             }
 
-            await _steamRepo.DeleteGameAsync(game);
+            await _steamRepo.DeleteUserAsync(user);
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }

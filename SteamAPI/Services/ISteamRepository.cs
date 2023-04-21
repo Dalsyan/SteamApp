@@ -19,7 +19,7 @@ namespace SteamAPI.Services
         Task<User?> GetUserAsync(int userId);
         Task<bool> UserExistsAsync(int userId);
         Task AddUserAsync(User user);
-        Task DeleteUserAsync(int userId);
+        Task DeleteUserAsync(User user);
         #endregion
     }
 }
