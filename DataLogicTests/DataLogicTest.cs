@@ -16,7 +16,7 @@ namespace DataLogicTests
             builder.UseInMemoryDatabase("GetGames");
             int seedCount = SeedManyGames(builder.Options);
 
-            using (var context = new SteamContext(builder.Options)) 
+            using (var context = new SteamContext(builder.Options))
             {
                 var bizlogic = new DataLogic(context);
                 var gameRetrieved = bizlogic.GetAllGames();
@@ -68,7 +68,7 @@ namespace DataLogicTests
             {
                 var gameDTO = new GameDTO { Title = "test", Gender = "gTest" };
                 var bizlogic = new DataLogic(context);
-                var canUpdate =  bizlogic.UpdateGame(gameDTO).GetAwaiter().GetResult();
+                var canUpdate = bizlogic.UpdateGame(gameDTO).GetAwaiter().GetResult();
                 var gameRetrieved = bizlogic.GetGameById(gameDTO.GameId);
                 if (canUpdate)
                 {
