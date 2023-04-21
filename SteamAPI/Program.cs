@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SteamAPI;
+using SteamAPI.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,11 +16,10 @@ builder.Services.AddDbContext<SteamData.SteamContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("SteamConnection"))
     .EnableSensitiveDataLogging()
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-builder.Services.AddScoped<SteamAPI.DataLogic>();
+builder.Services.AddScoped<ISteamRepository, SteamRepository>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
-
-var dl = new DataLogic();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

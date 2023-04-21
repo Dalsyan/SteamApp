@@ -3,6 +3,7 @@ using SteamAPI;
 using SteamAPI.Models;
 using SteamData;
 using SteamDomain;
+using System.Diagnostics;
 
 namespace DataLogicTests
 {
@@ -20,6 +21,7 @@ namespace DataLogicTests
             {
                 var bizlogic = new DataLogic(context);
                 var gameRetrieved = bizlogic.GetAllGames();
+                Debug.WriteLine($"seedCount: {seedCount}");
 
                 Assert.AreEqual(seedCount, gameRetrieved.Result.Count);
             }
@@ -36,6 +38,7 @@ namespace DataLogicTests
             {
                 var bizlogic = new DataLogic(context);
                 var gameRetrieved = bizlogic.GetGameById(seededId);
+                Debug.WriteLine($"seededId: {seededId}");
 
                 Assert.AreEqual(seededId, gameRetrieved.Result.GameId);
             }
@@ -51,9 +54,12 @@ namespace DataLogicTests
             using (var context = new SteamContext(builder.Options))
             {
                 var game = new Game { Title = "test", Gender = "gTest" };
+                Debug.WriteLine($"gamesCount: {context.Games.Count()}");
                 context.Games.Add(game);
+                context.SaveChanges();
+                Debug.WriteLine($"gamesCount: {context.Games.Count()}");
 
-                Assert.AreEqual(EntityState.Added, context.Entry(game).State);
+                Assert.AreEqual(context.Games.Count(), 1);
             }
         }
         [TestMethod]
@@ -66,15 +72,24 @@ namespace DataLogicTests
 
             using (var context = new SteamContext(builder.Options))
             {
-                var gameDTO = new GameDTO { Title = "test", Gender = "gTest" };
+                var gameDTO = new GameDTO { GameId = 1, Title = "test", Gender = "gTest" };
+                Debug.WriteLine($"gameDTO: {gameDTO.GameId}");
+                Debug.WriteLine($"gameDTO: {gameDTO.Title}");
+
                 var bizlogic = new DataLogic(context);
                 var canUpdate = bizlogic.UpdateGame(gameDTO).GetAwaiter().GetResult();
-                var gameRetrieved = bizlogic.GetGameById(gameDTO.GameId);
+
+                var gameRetrieved = bizlogic.GetGameById(seededId);
+                Debug.WriteLine($"gameRetrieved: {gameRetrieved.Result.GameId}");
+                Debug.WriteLine($"gameRetrieved: {gameRetrieved.Result.Title}");
                 if (canUpdate)
                 {
                     gameRetrieved.Result.Title = gameDTO.Title;
                     gameRetrieved.Result.Gender = gameDTO.Gender;
+                    Debug.WriteLine($"gameRetrieved: {gameRetrieved.Result.GameId}");
+                    Debug.WriteLine($"gameRetrieved: {gameRetrieved.Result.Title}");
                 }
+                context.SaveChanges();
 
                 Assert.AreEqual(gameRetrieved.Result.Title, gameDTO.Title);
             }
@@ -91,9 +106,12 @@ namespace DataLogicTests
             using (var context = new SteamContext(builder.Options))
             {
                 var bizlogic = new DataLogic(context);
+                Debug.WriteLine($"gamesCount: {context.Games.Count()}");
                 var gameRetrieved = bizlogic.DeleteGame(3);
+                context.SaveChanges();
+                Debug.WriteLine($"gamesCount: {context.Games.Count()}");
 
-                Assert.AreEqual(EntityState.Deleted, gameRetrieved.Status);
+                Assert.IsNull(context.Games.Find(3));
             }
         }
 
