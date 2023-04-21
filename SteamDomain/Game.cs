@@ -5,7 +5,7 @@
         
         public Game() 
         {
-            Users = new List<User>();
+            Users = new List<User?>();
             Developers = new List<Developer>();
             Servers = new List<Server>();
         }
@@ -16,6 +16,6 @@
         public int? CompanyId { get; set; }
         public List<Developer> Developers { get; set; }
         public List<Server>? Servers { get; set; }
-        public List<User> Users { get; set; }
+        public List<User?> Users { get; set; }
     }
 }
