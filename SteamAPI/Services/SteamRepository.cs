@@ -6,10 +6,15 @@ namespace SteamAPI.Services
 {
     public class SteamRepository : ISteamRepository
     {
-        private readonly SteamContext _context;
-        public SteamRepository(SteamContext context) 
+        SteamContext _context;
+        public SteamRepository(SteamContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+        public SteamRepository()
+        {
+            var option = new DbContextOptions<SteamContext>();
+            _context = new SteamContext(option);
         }
 
         public async Task<bool> SaveChangesAsync()

@@ -21,6 +21,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
+var repo = new SteamRepository();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
