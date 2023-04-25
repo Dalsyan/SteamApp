@@ -44,6 +44,13 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<GameDTO>(game));
         }
 
+        [HttpGet("{id}/users")]
+        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesWithUsersAsync()
+        {
+            var games = await _steamRepo.GetGamesWithUsersAsync();
+            return Ok(_mapper.Map<IEnumerable<GameDTO>>(games));
+        }
+
         // PUT: api/games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -54,8 +61,34 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            var game = await _steamRepo.GetGameAsync(id);
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
+           
+            //var game = await _steamRepo.GetGameAsync(id);
             _mapper.Map(gameDTO, game);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}/users")]
+        public async Task<ActionResult> PutUserInGame(int id, User user)
+        {
+            if (!await _steamRepo.GameExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
+
+            if (!await _steamRepo.UserExistsAsync(user.UserId))
+            {
+                await _steamRepo.AddUserAsync(user);
+                game.Users.Add(user);
+            }
+            else
+            {
+                game.Users.Add(user);
+            }
+
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
