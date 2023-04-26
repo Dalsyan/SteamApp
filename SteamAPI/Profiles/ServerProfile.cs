@@ -11,6 +11,7 @@ namespace SteamAPI.Profiles
             CreateMap<ServerForCreationDTO, SteamDomain.Server>();
             CreateMap<ServerForUpdateDTO, SteamDomain.Server>();
             CreateMap<SteamDomain.Server, ServerBaseDTO>();
+            CreateMap<ServerBaseDTO, SteamDomain.Server>();
         }
     }
 }

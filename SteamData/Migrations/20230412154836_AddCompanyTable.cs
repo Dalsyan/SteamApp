@@ -77,6 +77,11 @@ namespace SteamData.Migrations
                 table: "CompanyCountry",
                 column: "CountriesCountryId");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyCountry_CompaniesCompanyId",
+                table: "CompanyCountry",
+                column: "CompaniesCompanyId");
+
             migrationBuilder.AddForeignKey(
                 name: "FK_Games_Companies_CompanyId",
                 table: "Games",

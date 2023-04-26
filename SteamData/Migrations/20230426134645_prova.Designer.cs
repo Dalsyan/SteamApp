@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SteamData;
 
@@ -11,9 +12,11 @@ using SteamData;
 namespace SteamData.Migrations
 {
     [DbContext(typeof(SteamContext))]
-    partial class SteamContextModelSnapshot : ModelSnapshot
+    [Migration("20230426134645_prova")]
+    partial class prova
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,7 +269,7 @@ namespace SteamData.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"));
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Gender")
@@ -367,26 +370,31 @@ namespace SteamData.Migrations
                         new
                         {
                             UserId = 1,
+                            CountryId = 1,
                             Nickname = "dalsyan"
                         },
                         new
                         {
                             UserId = 2,
+                            CountryId = 1,
                             Nickname = "Tentxten"
                         },
                         new
                         {
                             UserId = 3,
+                            CountryId = 1,
                             Nickname = "Jamonsioo"
                         },
                         new
                         {
                             UserId = 4,
+                            CountryId = 1,
                             Nickname = "EnricDeTu"
                         },
                         new
                         {
                             UserId = 5,
+                            CountryId = 1,
                             Nickname = "ReiSapo"
                         });
                 });
@@ -466,9 +474,7 @@ namespace SteamData.Migrations
                 {
                     b.HasOne("SteamDomain.Company", null)
                         .WithMany("Games")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
                 });
 
             modelBuilder.Entity("SteamDomain.Server", b =>

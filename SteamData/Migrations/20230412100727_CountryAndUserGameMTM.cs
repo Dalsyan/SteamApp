@@ -115,13 +115,13 @@ namespace SteamData.Migrations
 
             migrationBuilder.InsertData(
                 table: "Games",
-                columns: new[] { "GameId", "Gender", "Title" },
+                columns: new[] { "GameId", "Gender", "Title", "CompanyId" },
                 values: new object[,]
                 {
-                    { 1, "MOBA", "League of Legends" },
-                    { 2, "Shooter", "Fortnite" },
-                    { 3, "Rol", "Call of Cthulhu" },
-                    { 4, "Simulator", "Stardew Valley" }
+                    { 1, "MOBA", "League of Legends", 1 },
+                    { 2, "Shooter", "Fortnite", 4 },
+                    { 3, "Rol", "Call of Cthulhu", 5 },
+                    { 4, "Simulator", "Stardew Valley", 2 }
                 });
 
             migrationBuilder.InsertData(

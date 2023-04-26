@@ -11,6 +11,7 @@ namespace SteamAPI.Profiles
             CreateMap<DeveloperForCreationDTO, SteamDomain.Developer>();
             CreateMap<DeveloperForUpdateDTO, SteamDomain.Developer>();
             CreateMap<SteamDomain.Developer, DeveloperBaseDTO>();
+            CreateMap < DeveloperBaseDTO, SteamDomain.Developer>();
         }
     }
 }

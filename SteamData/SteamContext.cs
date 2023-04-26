@@ -28,13 +28,23 @@ namespace SteamData
         {
             var userList = new User[]
             {
-                new User { UserId = 1, CountryId = 1, Nickname = "dalsyan"},
-                new User { UserId = 2, CountryId = 1, Nickname = "Tentxten"},
-                new User { UserId = 3, CountryId = 1, Nickname = "Jamonsioo"},
-                new User { UserId = 4, CountryId = 1, Nickname = "EnricDeTu"},
-                new User { UserId = 5, CountryId = 1, Nickname = "ReiSapo"}
+                new User { UserId = 1, Nickname = "dalsyan"},
+                new User { UserId = 2, Nickname = "Tentxten"},
+                new User { UserId = 3, Nickname = "Jamonsioo"},
+                new User { UserId = 4, Nickname = "EnricDeTu"},
+                new User { UserId = 5, Nickname = "ReiSapo"}
             };
             modelBuilder.Entity<User>().HasData(userList);
+
+            var companyList = new Company[]
+            {
+                new Company { CompanyId = 1, CompanyName = "Riot Games"},
+                new Company { CompanyId = 2, CompanyName = "ConcernedApe"},
+                new Company { CompanyId = 3, CompanyName = "FromSoftware"},
+                new Company { CompanyId = 4, CompanyName = "Epic Games"},
+                new Company { CompanyId = 5, CompanyName = "Focus Entertainment"}
+            };
+            modelBuilder.Entity<Company>().HasData(companyList);
 
             var gameList = new Game[]
             {
@@ -55,19 +65,9 @@ namespace SteamData
             };
             modelBuilder.Entity<Country>().HasData(countryList);
 
-            var companyList = new Company[]
-            {
-                new Company { CompanyId = 1, CompanyName = "Riot Games"},
-                new Company { CompanyId = 2, CompanyName = "ConcernedApe"},
-                new Company { CompanyId = 3, CompanyName = "FromSoftware"},
-                new Company { CompanyId = 4, CompanyName = "Epic Games"},
-                new Company { CompanyId = 5, CompanyName = "Focus Entertainment" }
-            };
-            modelBuilder.Entity<Company>().HasData(companyList);
-
             var accountList = new Account[]
             {
-                new Account { EmailId = 1, UserId = 1 ,Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01) },
+                new Account { EmailId = 1, UserId = 1 ,Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01)},
                 new Account { EmailId = 2, UserId = 2, Email = "tentxten@email.com", Password = "0002", CreationDate = new DateTime(2000, 04, 30) },
                 new Account { EmailId = 3, UserId = 3, Email = "jamonsioo@email.com", Password = "0003", CreationDate = new DateTime(2000, 08, 25) },
                 new Account { EmailId = 4, UserId = 4, Email = "enricdetu@email.com", Password = "0004", CreationDate = new DateTime(2001, 07, 15) },

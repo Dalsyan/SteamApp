@@ -35,11 +35,20 @@ namespace SteamAPI.Services
         #region Game
         public async Task<IEnumerable<Game>> GetAllGamesAsync()
         {
-            return await _context.Games.OrderBy(g => g.GameId).ToListAsync();
+            return await _context.Games.OrderBy(g => g.GameId)
+                .Include(g => g.CompanyId)
+                .Include(g => g.Users)
+                .Include(g => g.Developers)
+                .Include(g => g.Servers)
+                .ToListAsync();
         }
         public async Task<Game?> GetGameAsync(int gameId)
         {
-            return await _context.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
+            return await _context.Games
+                .Include(g => g.Users)
+                .Include(g => g.Developers)
+                .Include(g => g.Servers)
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
         }
         public async Task<bool> GameExistsAsync(int gameId)
         {
@@ -62,21 +71,6 @@ namespace SteamAPI.Services
         {
             return await _context.Games.OrderBy(g => g.GameId).Include(g => g.Users).ToListAsync();
         }
-        /*
-        public async Task AddUserToGameAsync(int gameId, User user)
-        {
-            var game = await GetGameAsync(gameId);
-            if (game != null)
-            {
-                game.Users.Add(user);
-            }
-            await _context.SaveChangesAsync();
-        }
-        public async Task AddNewUserToGameAsync(int gameId, UserForCreationDTO user)
-        {
-
-        }
-        */
         #endregion
 
         #region User
@@ -110,7 +104,7 @@ namespace SteamAPI.Services
         #region Account
         public async Task<IEnumerable<Account>> GetAllAccountsAsync()
         {
-            return await _context.Accounts.OrderBy(a => a.EmailId).Include(a => a.User).ToListAsync();
+            return await _context.Accounts.OrderBy(a => a.EmailId).ToListAsync();
         }
         public async Task<Account?> GetAccountAsync(int emailId)
         {

@@ -11,6 +11,6 @@
         public Account EmailId { get; set; }
         public int? CountryId { get; set; }
         public List<Game> Games { get; set; }
-        
+
     }
 }
