@@ -218,5 +218,33 @@ namespace SteamAPI.Services
             await _context.SaveChangesAsync();
         }
         #endregion
+
+        #region Developer
+        public async Task<IEnumerable<Developer>> GetAllDevelopersAsync()
+        {
+            return await _context.Devs.OrderBy(d => d.DevId).ToListAsync();
+        }
+        public async Task<Developer?> GetDeveloperAsync(int devId)
+        {
+            return await _context.Devs.FirstOrDefaultAsync(s => s.DevId == devId);
+        }
+        public async Task<bool> DeveloperExistsAsync(int devId)
+        {
+            return await _context.Devs.AnyAsync(s => s.DevId == devId);
+        }
+        public async Task AddDeveloperAsync(Developer dev)
+        {
+            if (!DeveloperExistsAsync(dev.DevId).Result)
+            {
+                _context.Devs.Add(dev);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteDeveloperAsync(Developer dev)
+        {
+            _context.Devs.Remove(dev);
+            await _context.SaveChangesAsync();
+        }
+        #endregion
     }
 }

@@ -56,5 +56,13 @@ namespace SteamAPI.Services
         Task AddServerAsync(Server server);
         Task DeleteServerAsync(Server server);
         #endregion
+
+        #region Developer
+        Task<IEnumerable<Developer>> GetAllDevelopersAsync();
+        Task<Developer?> GetDeveloperAsync(int devId);
+        Task<bool> DeveloperExistsAsync(int devId);
+        Task AddDeveloperAsync(Developer dev);
+        Task DeleteDeveloperAsync(Developer dev);
+        #endregion
     }
 }
