@@ -1,6 +1,6 @@
 ﻿using SteamDomain;
 
-namespace SteamAPI.Models
+namespace SteamAPI.Models.ServerDTOs
 {
     public class ServerDTO
     {

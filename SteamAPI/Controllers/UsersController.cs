@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SteamAPI.Models;
+using SteamAPI.Models.UserDTOs;
 using SteamAPI.Services;
 using SteamData;
 using SteamDomain;

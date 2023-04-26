@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SteamAPI.Models.GameDTOs;
 
 namespace SteamAPI.Profiles
 {
@@ -6,10 +7,10 @@ namespace SteamAPI.Profiles
     {
         public GameProfile()
         {
-            CreateMap<SteamDomain.Game, Models.GameDTO>();
-            CreateMap<Models.GameForCreationDTO, SteamDomain.Game>();
-            CreateMap<Models.GameForUpdateDTO, SteamDomain.Game>();
-            CreateMap<SteamDomain.Game, Models.GameBaseDTO>();
+            CreateMap<SteamDomain.Game, GameDTO>();
+            CreateMap<GameForCreationDTO, SteamDomain.Game>();
+            CreateMap<GameForUpdateDTO, SteamDomain.Game>();
+            CreateMap<SteamDomain.Game, GameBaseDTO>();
         }
     }
 }

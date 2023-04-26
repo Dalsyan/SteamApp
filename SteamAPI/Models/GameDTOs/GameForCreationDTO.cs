@@ -1,6 +1,6 @@
 ﻿using SteamDomain;
 
-namespace SteamAPI.Models
+namespace SteamAPI.Models.GameDTOs
 {
     public class GameForCreationDTO
     {

@@ -1,7 +1,7 @@
-﻿namespace SteamAPI.Models
+﻿namespace SteamAPI.Models.ServerDTOs
 {
     public class ServerForUpdateDTO
     {
-        
+
     }
 }

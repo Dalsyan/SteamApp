@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SteamAPI.Models.CountryDTOs;
 
 namespace SteamAPI.Profiles
 {
@@ -6,10 +7,10 @@ namespace SteamAPI.Profiles
     {
         public CountryProfile()
         {
-            CreateMap<SteamDomain.Country, Models.CountryDTO>();
-            CreateMap<Models.CountryForCreationDTO, SteamDomain.Country>();
-            CreateMap<Models.CountryForUpdateDTO, SteamDomain.Country>();
-            CreateMap<SteamDomain.Country, Models.CountryBaseDTO>();
+            CreateMap<SteamDomain.Country, CountryDTO>();
+            CreateMap<CountryForCreationDTO, SteamDomain.Country>();
+            CreateMap<CountryForUpdateDTO, SteamDomain.Country>();
+            CreateMap<SteamDomain.Country, CountryBaseDTO>();
         }
     }
 }

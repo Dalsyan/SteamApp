@@ -1,4 +1,4 @@
-﻿namespace SteamAPI.Models
+﻿namespace SteamAPI.Models.CompanyDTOs
 {
     public class CompanyBaseDTO
     {

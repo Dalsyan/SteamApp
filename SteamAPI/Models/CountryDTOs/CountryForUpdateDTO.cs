@@ -1,4 +1,4 @@
-﻿namespace SteamAPI.Models
+﻿namespace SteamAPI.Models.CountryDTOs
 {
     public class CountryForUpdateDTO
     {

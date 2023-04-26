@@ -1,9 +1,10 @@
 ﻿using SteamDomain;
 
-namespace SteamAPI.Models
+namespace SteamAPI.Models.GameDTOs
 {
-    public class GameForUpdateDTO
+    public class GameDTO
     {
+        public int GameId { get; set; }
         public string Title { get; set; }
         public string Gender { get; set; }
         public List<User?> Users { get; set; } = new List<User?>();

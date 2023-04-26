@@ -1,4 +1,4 @@
-﻿namespace SteamAPI.Models
+﻿namespace SteamAPI.Models.GameDTOs
 {
     public class GameBaseDTO
     {
