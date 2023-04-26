@@ -27,7 +27,7 @@ namespace SteamAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompanyDTO>>> Getcompanies()
         {
-            var companies = await _steamRepo.GetAllcompaniesAsync();
+            var companies = await _steamRepo.GetAllCompaniesAsync();
             return Ok(_mapper.Map<IEnumerable<CompanyDTO>>(companies));
         }
 
@@ -54,7 +54,7 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            var Company = await _steamRepo.GetContext().companies.AsTracking().FirstOrDefaultAsync(g => g.CompanyId == id);
+            var Company = await _steamRepo.GetContext().Companies.AsTracking().FirstOrDefaultAsync(g => g.CompanyId == id);
            
             //var Company = await _steamRepo.GetCompanyAsync(id);
             _mapper.Map(CompanyDTO, Company);

@@ -190,5 +190,33 @@ namespace SteamAPI.Services
             await _context.SaveChangesAsync();
         }
         #endregion
+
+        #region Server
+        public async Task<IEnumerable<Server>> GetAllServersAsync()
+        {
+            return await _context.Servers.OrderBy(s => s.ServerId).ToListAsync();
+        }
+        public async Task<Server?> GetServerAsync(int serverId)
+        {
+            return await _context.Servers.FirstOrDefaultAsync(s => s.ServerId == serverId);
+        }
+        public async Task<bool> ServerExistsAsync(int serverId)
+        {
+            return await _context.Servers.AnyAsync(s => s.ServerId == serverId);
+        }
+        public async Task AddServerAsync(Server server)
+        {
+            if (!ServerExistsAsync(server.ServerId).Result)
+            {
+                _context.Servers.Add(server);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteServerAsync(Server server)
+        {
+            _context.Servers.Remove(server);
+            await _context.SaveChangesAsync();
+        }
+        #endregion
     }
 }
