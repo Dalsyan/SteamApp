@@ -13,6 +13,11 @@ namespace SteamData
         public DbSet<Developer> Devs { get; set; }
         public DbSet<Server> Servers { get; set; }
 
+        public SteamContext()
+        {
+
+        }
+
         public SteamContext(DbContextOptions<SteamContext> options) 
             : base(options) 
         {

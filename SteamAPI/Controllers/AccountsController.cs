@@ -54,11 +54,8 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            var account = await _steamRepo.GetAccountAsync(id);
-            if (account == null)
-            {
-                return NotFound();
-            }
+            var account = await _steamRepo.GetContext().Accounts.AsTracking().FirstOrDefaultAsync(a => a.EmailId == id);
+
             _mapper.Map(accountDTO, account);
             await _steamRepo.SaveChangesAsync();
 

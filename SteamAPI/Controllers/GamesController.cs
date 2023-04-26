@@ -44,13 +44,6 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<GameDTO>(game));
         }
 
-        [HttpGet("{id}/users")]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGamesWithUsersAsync()
-        {
-            var games = await _steamRepo.GetGamesWithUsersAsync();
-            return Ok(_mapper.Map<IEnumerable<GameDTO>>(games));
-        }
-
         // PUT: api/games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

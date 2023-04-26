@@ -2,6 +2,7 @@
 using SteamAPI.Models;
 using SteamData;
 using SteamDomain;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SteamAPI.Services
 {
@@ -93,7 +94,7 @@ namespace SteamAPI.Services
         }
         public async Task AddUserAsync(User user)
         {
-            if (!GameExistsAsync(user.UserId).Result)
+            if (!UserExistsAsync(user.UserId).Result)
             {
                 _context.Users.Add(user);
             }
@@ -130,6 +131,62 @@ namespace SteamAPI.Services
         public async Task DeleteAccountAsync(Account account)
         {
             _context.Accounts.Remove(account);
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Country
+        public async Task<IEnumerable<Country>> GetAllCountriesAsync()
+        {
+            return await _context.Countries.OrderBy(c => c.CountryId).ToListAsync();
+        }
+        public async Task<Country?> GetCountryAsync(int countryId)
+        {
+            return await _context.Countries.FirstOrDefaultAsync(c => c.CountryId == countryId);
+        }
+        public async Task<bool> CountryExistsAsync(int countryId)
+        {
+            return await _context.Countries.AnyAsync(c => c.CountryId == countryId);
+        }
+        public async Task AddCountryAsync(Country country)
+        {
+            if (!CountryExistsAsync(country.CountryId).Result)
+            {
+                _context.Countries.Add(country);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteCountryAsync(Country country)
+        {
+            _context.Countries.Remove(country);
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Company
+        public async Task<IEnumerable<Company>> GetAllCompaniesAsync()
+        {
+            return await _context.Companies.OrderBy(c => c.CompanyId).ToListAsync();
+        }
+        public async Task<Company?> GetCompanyAsync(int companyId)
+        {
+            return await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        }
+        public async Task<bool> CompanyExistsAsync(int companyId)
+        {
+            return await _context.Companies.AnyAsync(c => c.CompanyId == companyId);
+        }
+        public async Task AddCompanyAsync(Company company)
+        {
+            if (!CountryExistsAsync(company.CompanyId).Result)
+            {
+                _context.Companies.Add(company);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteCompanyAsync(Company company)
+        {
+            _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
         }
         #endregion

@@ -8,15 +8,13 @@ namespace SteamAPI.Services
     {
         Task<bool> SaveChangesAsync();
         public SteamContext GetContext();
+
         #region Game
         Task<IEnumerable<Game>> GetAllGamesAsync();
         Task<Game?> GetGameAsync(int gameId);
         Task<bool> GameExistsAsync(int gameId);
         Task AddGameAsync(Game game);
         Task DeleteGameAsync(Game game);
-        Task<IEnumerable<Game>> GetGamesWithUsersAsync();
-        // Task AddUserToGameAsync(int id, User user);
-        // Task AddNewUserToGameAsync(int id, UserForCreationDTO userDTO);
         #endregion
 
         #region User
@@ -35,5 +33,20 @@ namespace SteamAPI.Services
         Task DeleteAccountAsync(Account account);
         #endregion
 
+        #region Country
+        Task<IEnumerable<Country>> GetAllCountriesAsync();
+        Task<Country?> GetCountryAsync(int countryId);
+        Task<bool> CountryExistsAsync(int countryId);
+        Task AddCountryAsync(Country country);
+        Task DeleteCountryAsync(Country country);
+        #endregion
+
+        #region Company
+        Task<IEnumerable<Company>> GetAllCompaniesAsync();
+        Task<Company?> GetCompanyAsync(int companyId);
+        Task<bool> CompanyExistsAsync(int companyId);
+        Task AddCompanyAsync(Company company);
+        Task DeleteCompanyAsync(Company company);
+        #endregion
     }
 }
