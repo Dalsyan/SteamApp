@@ -1,13 +1,18 @@
-﻿using SteamDomain;
+﻿using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.DeveloperDTOs;
+using SteamAPI.Models.ServerDTOs;
+using SteamAPI.Models.UserDTOs;
+using SteamDomain;
 
 namespace SteamAPI.Models.GameDTOs
 {
     public class GameForUpdateDTO
     {
         public string Title { get; set; }
-        public string Gender { get; set; }
-        public List<User?> Users { get; set; } = new List<User?>();
-        public List<Developer> Developers { get; set; } = new List<Developer>();
-        public List<Server>? Servers { get; set; } = new List<Server>();
+        public string? Gender { get; set; }
+        public int CompanyId { get; set; }
+        // public ICollection<UserBaseDTO?> Users { get; set; } = new List<UserBaseDTO?>();
+        // public ICollection<DeveloperBaseDTO> Developers { get; set; } = new List<DeveloperBaseDTO>();
+        // public ICollection<ServerBaseDTO?> Servers { get; set; } = new List<ServerBaseDTO?>();
     }
 }

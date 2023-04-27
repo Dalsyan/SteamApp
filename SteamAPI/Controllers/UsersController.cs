@@ -31,6 +31,14 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<UserDTO>>(users));
         }
 
+        // GET: api/users/base
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<UserBaseDTO>>> GetUsersBase()
+        {
+            var users = await _steamRepo.GetAllUsersBaseAsync();
+            return Ok(_mapper.Map<IEnumerable<UserBaseDTO>>(users));
+        }
+
         // GET: api/users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUser(int id)
@@ -42,6 +50,19 @@ namespace SteamAPI.Controllers
             }
 
             return Ok(_mapper.Map<UserDTO>(user));
+        }
+
+        // GET: api/users/5
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<UserBaseDTO>> GetUserBase(int id)
+        {
+            var user = await _steamRepo.GetUserBaseAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<UserBaseDTO>(user));
         }
 
         // PUT: api/users/5
@@ -57,6 +78,31 @@ namespace SteamAPI.Controllers
             var user = await _steamRepo.GetContext().Users.AsTracking().FirstOrDefaultAsync(u => u.UserId == id);
 
             _mapper.Map(userDTO, user);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // PUT: api/users/5/games
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}/games")]
+        public async Task<ActionResult> PutGameUser(int id, int gameId)
+        {
+            if (!await _steamRepo.UserExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var user = await _steamRepo.GetContext().Users.AsTracking().FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (!await _steamRepo.GameExistsAsync(gameId))
+            {
+                return NotFound();
+            }
+
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
+
+            user.Games.Add(game);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

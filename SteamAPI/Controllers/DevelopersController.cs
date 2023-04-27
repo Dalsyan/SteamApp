@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models.DeveloperDTOs;
+using SteamAPI.Models.GameDTOs;
 using SteamAPI.Services;
 using SteamData;
 using SteamDomain;
@@ -57,6 +59,35 @@ namespace SteamAPI.Controllers
             var developer = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == id);
 
             _mapper.Map(developerDTO, developer);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // PUT: api/developers/5/games
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}/games")]
+        public async Task<ActionResult> PutDeveloperGame(int id, GameForCreationDTO game)
+        {
+            if (!await _steamRepo.DeveloperExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var dev = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == id);
+
+            var finalGame = _mapper.Map<Game>(game);
+
+            foreach (var games in _steamRepo.GetAllGamesBaseAsync().Result)
+            {
+                if (games.Title == game.Title)
+                {
+                    return NoContent();
+                }
+            }
+
+            dev.Games.Add(finalGame);
+
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

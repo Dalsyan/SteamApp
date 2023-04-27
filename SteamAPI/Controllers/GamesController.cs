@@ -31,6 +31,14 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<GameDTO>>(games));
         }
 
+        // GET: api/games/base
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetGamesBase()
+        {
+            var games = await _steamRepo.GetAllGamesBaseAsync();
+            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games));
+        }
+
         // GET: api/games/5
         [HttpGet("{id}")]
         public async Task<ActionResult<GameDTO>> GetGame(int id)
@@ -42,6 +50,19 @@ namespace SteamAPI.Controllers
             }
 
             return Ok(_mapper.Map<GameDTO>(game));
+        }
+
+        // GET: api/games/base
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<GameBaseDTO>> GetGameBase(int id)
+        {
+            var game = await _steamRepo.GetGameBaseAsync(id);
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<GameBaseDTO>(game));
         }
 
         // PUT: api/games/5

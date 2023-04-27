@@ -11,6 +11,7 @@ namespace SteamAPI.Profiles
             CreateMap<GameForCreationDTO, SteamDomain.Game>();
             CreateMap<GameForUpdateDTO, SteamDomain.Game>();
             CreateMap<SteamDomain.Game, GameBaseDTO>();
+            CreateMap<GameBaseDTO, SteamDomain.Game>();
         }
     }
 }

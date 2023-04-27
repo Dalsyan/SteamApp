@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.GameDTOs;
 using SteamAPI.Services;
 using SteamData;
 using SteamDomain;
@@ -31,6 +32,13 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<CompanyDTO>>(companies));
         }
 
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<CompanyBaseDTO>>> GetcompaniesBase()
+        {
+            var companies = await _steamRepo.GetAllCompaniesBaseAsync();
+            return Ok(_mapper.Map<IEnumerable<CompanyBaseDTO>>(companies));
+        }
+
         // GET: api/companies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CompanyDTO>> GetCompany(int id)
@@ -42,6 +50,19 @@ namespace SteamAPI.Controllers
             }
 
             return Ok(_mapper.Map<CompanyDTO>(Company));
+        }
+
+        // GET: api/companies/5/base
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<CompanyBaseDTO>> GetCompanyBase(int id)
+        {
+            var Company = await _steamRepo.GetCompanyBaseAsync(id);
+            if (Company == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CompanyBaseDTO>(Company));
         }
 
         // PUT: api/companies/5
@@ -58,6 +79,27 @@ namespace SteamAPI.Controllers
            
             //var Company = await _steamRepo.GetCompanyAsync(id);
             _mapper.Map(CompanyDTO, Company);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // PUT: api/companies/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}/games")]
+        public async Task<ActionResult> PutCompanyGame(int id, GameForCreationDTO game)
+        {
+            if (!await _steamRepo.CompanyExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var company = await _steamRepo.GetContext().Companies.AsTracking().FirstOrDefaultAsync(g => g.CompanyId == id);
+
+            var finalGame = _mapper.Map<Game>(game);
+
+            company.Games.Add(finalGame);
+
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

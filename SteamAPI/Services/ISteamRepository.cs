@@ -15,6 +15,9 @@ namespace SteamAPI.Services
         Task<bool> GameExistsAsync(int gameId);
         Task AddGameAsync(Game game);
         Task DeleteGameAsync(Game game);
+
+        Task<IEnumerable<Game>> GetAllGamesBaseAsync();
+        Task<Game?> GetGameBaseAsync(int gameId);
         #endregion
 
         #region User
@@ -23,6 +26,9 @@ namespace SteamAPI.Services
         Task<bool> UserExistsAsync(int userId);
         Task AddUserAsync(User user);
         Task DeleteUserAsync(User user);
+
+        Task<IEnumerable<User>> GetAllUsersBaseAsync();
+        Task<User?> GetUserBaseAsync(int userId);
         #endregion
 
         #region Account
@@ -47,6 +53,9 @@ namespace SteamAPI.Services
         Task<bool> CompanyExistsAsync(int companyId);
         Task AddCompanyAsync(Company company);
         Task DeleteCompanyAsync(Company company);
+
+        Task<IEnumerable<Company>> GetAllCompaniesBaseAsync();
+        Task<Company?> GetCompanyBaseAsync(int companyId);
         #endregion
 
         #region Server
@@ -63,6 +72,9 @@ namespace SteamAPI.Services
         Task<bool> DeveloperExistsAsync(int devId);
         Task AddDeveloperAsync(Developer dev);
         Task DeleteDeveloperAsync(Developer dev);
+
+        Task<IEnumerable<Developer>> GetAllDevsBaseAsync();
+        Task<Developer?> GetDevBaseAsync(int devId);
         #endregion
     }
 }

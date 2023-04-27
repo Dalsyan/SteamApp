@@ -68,9 +68,16 @@ namespace SteamAPI.Services
             _context.Games.Remove(game);
             await _context.SaveChangesAsync();
         }
-        public async Task<IEnumerable<Game>> GetGamesWithUsersAsync()
+
+        public async Task<IEnumerable<Game>> GetAllGamesBaseAsync()
         {
-            return await _context.Games.OrderBy(g => g.GameId).Include(g => g.Users).ToListAsync();
+            return await _context.Games.OrderBy(g => g.GameId)
+                .ToListAsync();
+        }
+        public async Task<Game?> GetGameBaseAsync(int gameId)
+        {
+            return await _context.Games
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
         }
         #endregion
 
@@ -105,6 +112,17 @@ namespace SteamAPI.Services
         {
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersBaseAsync()
+        {
+            return await _context.Users.OrderBy(g => g.UserId)
+                .ToListAsync();
+        }
+        public async Task<User?> GetUserBaseAsync(int userId)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == userId);
         }
         #endregion
 
@@ -216,6 +234,17 @@ namespace SteamAPI.Services
             _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Company>> GetAllCompaniesBaseAsync()
+        {
+            return await _context.Companies.OrderBy(c => c.CompanyId)
+                .ToListAsync();
+        }
+        public async Task<Company?> GetCompanyBaseAsync(int companyId)
+        {
+            return await _context.Companies
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        }
         #endregion
 
         #region Server
@@ -287,6 +316,17 @@ namespace SteamAPI.Services
         {
             _context.Devs.Remove(dev);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Developer>> GetAllDevsBaseAsync()
+        {
+            return await _context.Devs.OrderBy(d => d.DevId)
+                .ToListAsync();
+        }
+        public async Task<Developer?> GetDevBaseAsync(int devId)
+        {
+            return await _context.Devs
+                .FirstOrDefaultAsync(d => d.DevId == devId);
         }
         #endregion
     }
