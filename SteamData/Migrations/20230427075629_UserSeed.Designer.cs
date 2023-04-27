@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SteamData;
 
@@ -11,9 +12,11 @@ using SteamData;
 namespace SteamData.Migrations
 {
     [DbContext(typeof(SteamContext))]
-    partial class SteamContextModelSnapshot : ModelSnapshot
+    [Migration("20230427075629_UserSeed")]
+    partial class UserSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,53 +103,6 @@ namespace SteamData.Migrations
                         .IsUnique();
 
                     b.ToTable("Accounts");
-
-                    b.HasData(
-                        new
-                        {
-                            EmailId = 1,
-                            CountryId = 1,
-                            CreationDate = new DateTime(2000, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "dalsyan@email.com",
-                            Password = "0001",
-                            UserId = 1
-                        },
-                        new
-                        {
-                            EmailId = 2,
-                            CountryId = 1,
-                            CreationDate = new DateTime(2000, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "tentxten@email.com",
-                            Password = "0002",
-                            UserId = 2
-                        },
-                        new
-                        {
-                            EmailId = 3,
-                            CountryId = 1,
-                            CreationDate = new DateTime(2000, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "jamonsioo@email.com",
-                            Password = "0003",
-                            UserId = 3
-                        },
-                        new
-                        {
-                            EmailId = 4,
-                            CountryId = 1,
-                            CreationDate = new DateTime(2001, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "enricdetu@email.com",
-                            Password = "0004",
-                            UserId = 4
-                        },
-                        new
-                        {
-                            EmailId = 5,
-                            CountryId = 1,
-                            CreationDate = new DateTime(2000, 12, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "reisapo@email.com",
-                            Password = "0005",
-                            UserId = 5
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.Company", b =>
@@ -164,33 +120,6 @@ namespace SteamData.Migrations
                     b.HasKey("CompanyId");
 
                     b.ToTable("Companies");
-
-                    b.HasData(
-                        new
-                        {
-                            CompanyId = 1,
-                            CompanyName = "Riot Games"
-                        },
-                        new
-                        {
-                            CompanyId = 2,
-                            CompanyName = "ConcernedApe"
-                        },
-                        new
-                        {
-                            CompanyId = 3,
-                            CompanyName = "FromSoftware"
-                        },
-                        new
-                        {
-                            CompanyId = 4,
-                            CompanyName = "Epic Games"
-                        },
-                        new
-                        {
-                            CompanyId = 5,
-                            CompanyName = "Focus Entertainment"
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.Country", b =>
@@ -208,33 +137,6 @@ namespace SteamData.Migrations
                     b.HasKey("CountryId");
 
                     b.ToTable("Countries");
-
-                    b.HasData(
-                        new
-                        {
-                            CountryId = 1,
-                            CountryName = "Spain"
-                        },
-                        new
-                        {
-                            CountryId = 2,
-                            CountryName = "UK"
-                        },
-                        new
-                        {
-                            CountryId = 3,
-                            CountryName = "Italy"
-                        },
-                        new
-                        {
-                            CountryId = 4,
-                            CountryName = "USA"
-                        },
-                        new
-                        {
-                            CountryId = 5,
-                            CountryName = "China"
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.Developer", b =>
@@ -265,48 +167,6 @@ namespace SteamData.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Devs");
-
-                    b.HasData(
-                        new
-                        {
-                            DevId = 1,
-                            CompanyId = 1,
-                            CountryId = 1,
-                            FirstName = "Pau",
-                            LastName = "Vidal"
-                        },
-                        new
-                        {
-                            DevId = 2,
-                            CompanyId = 1,
-                            CountryId = 1,
-                            FirstName = "Ana",
-                            LastName = "Pérez"
-                        },
-                        new
-                        {
-                            DevId = 3,
-                            CompanyId = 2,
-                            CountryId = 1,
-                            FirstName = "Enric",
-                            LastName = "Puigcerver"
-                        },
-                        new
-                        {
-                            DevId = 4,
-                            CompanyId = 4,
-                            CountryId = 1,
-                            FirstName = "Ivan",
-                            LastName = "Fullana"
-                        },
-                        new
-                        {
-                            DevId = 5,
-                            CompanyId = 2,
-                            CountryId = 3,
-                            FirstName = "Mario",
-                            LastName = "Valencia"
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.Game", b =>
@@ -333,36 +193,6 @@ namespace SteamData.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Games");
-
-                    b.HasData(
-                        new
-                        {
-                            GameId = 1,
-                            CompanyId = 1,
-                            Gender = "MOBA",
-                            Title = "League of Legends"
-                        },
-                        new
-                        {
-                            GameId = 2,
-                            CompanyId = 4,
-                            Gender = "Shooter",
-                            Title = "Fortnite"
-                        },
-                        new
-                        {
-                            GameId = 3,
-                            CompanyId = 5,
-                            Gender = "Rol",
-                            Title = "Call of Cthulhu"
-                        },
-                        new
-                        {
-                            GameId = 4,
-                            CompanyId = 2,
-                            Gender = "Simulator",
-                            Title = "Stardew Valley"
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.Server", b =>
@@ -395,40 +225,6 @@ namespace SteamData.Migrations
                     b.HasIndex("GameId");
 
                     b.ToTable("Servers");
-
-                    b.HasData(
-                        new
-                        {
-                            ServerId = 1,
-                            CompanyId = 1,
-                            CountryId = 2,
-                            GameId = 1,
-                            ServerName = "Riot 1"
-                        },
-                        new
-                        {
-                            ServerId = 2,
-                            CompanyId = 1,
-                            CountryId = 4,
-                            GameId = 1,
-                            ServerName = "Riot 2"
-                        },
-                        new
-                        {
-                            ServerId = 3,
-                            CompanyId = 4,
-                            CountryId = 4,
-                            GameId = 2,
-                            ServerName = "Epic 1"
-                        },
-                        new
-                        {
-                            ServerId = 4,
-                            CompanyId = 2,
-                            CountryId = 4,
-                            GameId = 4,
-                            ServerName = "Stardew 1"
-                        });
                 });
 
             modelBuilder.Entity("SteamDomain.User", b =>

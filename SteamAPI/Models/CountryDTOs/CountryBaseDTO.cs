@@ -1,4 +1,8 @@
-﻿using SteamDomain;
+﻿using SteamAPI.Models.AccountDTOs;
+using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.DeveloperDTOs;
+using SteamAPI.Models.ServerDTOs;
+using SteamDomain;
 
 namespace SteamAPI.Models.CountryDTOs
 {
@@ -6,6 +10,5 @@ namespace SteamAPI.Models.CountryDTOs
     {
         public int CountryId { get; set; }
         public string CountryName { get; set; }
-        public List<Server>? Servers { get; set; } = new List<Server>();
     }
 }

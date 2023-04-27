@@ -5,15 +5,20 @@ namespace SteamDomain
 {
     public class Developer
     {
-        public Developer() {
-            Games = new List<Game>();
-        }
         [Key]
         public int DevId { get; set; }
+        [Required]
         public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
+
+        [ForeignKey("Country")]
         public int CountryId { get; set; }
+        public Country Country { get; set; }
+
+        [ForeignKey("Company")]
         public int CompanyId { get; set; }
-        public List<Game> Games { get; set; }
+        public Company Company { get; set; }
+
+        public ICollection<Game?> Games { get; set; } = new List<Game?>();
     }
 }

@@ -12,15 +12,15 @@ using SteamData;
 namespace SteamData.Migrations
 {
     [DbContext(typeof(SteamContext))]
-    [Migration("20230414103114_AddDbSets")]
-    partial class AddDbSets
+    [Migration("20230427080237_AccountSeed")]
+    partial class AccountSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -78,6 +78,9 @@ namespace SteamData.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmailId"));
 
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -94,6 +97,8 @@ namespace SteamData.Migrations
 
                     b.HasKey("EmailId");
 
+                    b.HasIndex("CountryId");
+
                     b.HasIndex("UserId")
                         .IsUnique();
 
@@ -103,6 +108,7 @@ namespace SteamData.Migrations
                         new
                         {
                             EmailId = 1,
+                            CountryId = 1,
                             CreationDate = new DateTime(2000, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "dalsyan@email.com",
                             Password = "0001",
@@ -111,6 +117,7 @@ namespace SteamData.Migrations
                         new
                         {
                             EmailId = 2,
+                            CountryId = 1,
                             CreationDate = new DateTime(2000, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "tentxten@email.com",
                             Password = "0002",
@@ -119,6 +126,7 @@ namespace SteamData.Migrations
                         new
                         {
                             EmailId = 3,
+                            CountryId = 1,
                             CreationDate = new DateTime(2000, 8, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "jamonsioo@email.com",
                             Password = "0003",
@@ -127,6 +135,7 @@ namespace SteamData.Migrations
                         new
                         {
                             EmailId = 4,
+                            CountryId = 1,
                             CreationDate = new DateTime(2001, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "enricdetu@email.com",
                             Password = "0004",
@@ -135,6 +144,7 @@ namespace SteamData.Migrations
                         new
                         {
                             EmailId = 5,
+                            CountryId = 1,
                             CreationDate = new DateTime(2000, 12, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "reisapo@email.com",
                             Password = "0005",
@@ -249,7 +259,6 @@ namespace SteamData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DevId");
@@ -269,7 +278,7 @@ namespace SteamData.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"));
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Gender")
@@ -331,8 +340,12 @@ namespace SteamData.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GameId")
+                    b.Property<int?>("GameId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ServerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ServerId");
 
@@ -353,16 +366,11 @@ namespace SteamData.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nickname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("CountryId");
 
                     b.ToTable("Users");
 
@@ -370,31 +378,26 @@ namespace SteamData.Migrations
                         new
                         {
                             UserId = 1,
-                            CountryId = 1,
                             Nickname = "dalsyan"
                         },
                         new
                         {
                             UserId = 2,
-                            CountryId = 1,
                             Nickname = "Tentxten"
                         },
                         new
                         {
                             UserId = 3,
-                            CountryId = 1,
                             Nickname = "Jamonsioo"
                         },
                         new
                         {
                             UserId = 4,
-                            CountryId = 1,
                             Nickname = "EnricDeTu"
                         },
                         new
                         {
                             UserId = 5,
-                            CountryId = 1,
                             Nickname = "ReiSapo"
                         });
                 });
@@ -446,65 +449,76 @@ namespace SteamData.Migrations
 
             modelBuilder.Entity("SteamDomain.Account", b =>
                 {
+                    b.HasOne("SteamDomain.Country", "Country")
+                        .WithMany("Accounts")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SteamDomain.User", "User")
-                        .WithOne("EmailId")
+                        .WithOne("Account")
                         .HasForeignKey("SteamDomain.Account", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Country");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("SteamDomain.Developer", b =>
                 {
-                    b.HasOne("SteamDomain.Company", null)
+                    b.HasOne("SteamDomain.Company", "Company")
                         .WithMany("Developers")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SteamDomain.Country", null)
+                    b.HasOne("SteamDomain.Country", "Country")
                         .WithMany("Developers")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("SteamDomain.Game", b =>
                 {
-                    b.HasOne("SteamDomain.Company", null)
+                    b.HasOne("SteamDomain.Company", "Company")
                         .WithMany("Games")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("SteamDomain.Server", b =>
                 {
-                    b.HasOne("SteamDomain.Company", null)
+                    b.HasOne("SteamDomain.Company", "Company")
                         .WithMany("Servers")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SteamDomain.Country", null)
+                    b.HasOne("SteamDomain.Country", "Country")
                         .WithMany("Servers")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SteamDomain.Game", null)
+                    b.HasOne("SteamDomain.Game", "Game")
                         .WithMany("Servers")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                        .HasForeignKey("GameId");
 
-            modelBuilder.Entity("SteamDomain.User", b =>
-                {
-                    b.HasOne("SteamDomain.Country", null)
-                        .WithMany("Users")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Company");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("SteamDomain.Company", b =>
@@ -518,11 +532,11 @@ namespace SteamData.Migrations
 
             modelBuilder.Entity("SteamDomain.Country", b =>
                 {
+                    b.Navigation("Accounts");
+
                     b.Navigation("Developers");
 
                     b.Navigation("Servers");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("SteamDomain.Game", b =>
@@ -532,7 +546,7 @@ namespace SteamData.Migrations
 
             modelBuilder.Entity("SteamDomain.User", b =>
                 {
-                    b.Navigation("EmailId")
+                    b.Navigation("Account")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

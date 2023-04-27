@@ -36,7 +36,7 @@ namespace SteamAPI.Services
         public async Task<IEnumerable<Game>> GetAllGamesAsync()
         {
             return await _context.Games.OrderBy(g => g.GameId)
-                .Include(g => g.CompanyId)
+                .Include(g => g.Company)
                 .Include(g => g.Users)
                 .Include(g => g.Developers)
                 .Include(g => g.Servers)
@@ -45,6 +45,7 @@ namespace SteamAPI.Services
         public async Task<Game?> GetGameAsync(int gameId)
         {
             return await _context.Games
+                .Include(g => g.Company)
                 .Include(g => g.Users)
                 .Include(g => g.Developers)
                 .Include(g => g.Servers)
@@ -76,11 +77,17 @@ namespace SteamAPI.Services
         #region User
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _context.Users.OrderBy(u => u.UserId).Include(u => u.EmailId).ToListAsync();
+            return await _context.Users.OrderBy(u => u.UserId)
+                .Include(u => u.Account)
+                .Include(u => u.Games)
+                .ToListAsync();
         }
         public async Task<User?> GetUserAsync(int userId)
         {
-            return await _context.Users.Include(u => u.EmailId).FirstOrDefaultAsync(u => u.UserId == userId);
+            return await _context.Users
+                .Include(u => u.Account)
+                .Include(u => u.Games)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
         }
         public async Task<bool> UserExistsAsync(int userId)
         {
@@ -104,11 +111,17 @@ namespace SteamAPI.Services
         #region Account
         public async Task<IEnumerable<Account>> GetAllAccountsAsync()
         {
-            return await _context.Accounts.OrderBy(a => a.EmailId).ToListAsync();
+            return await _context.Accounts.OrderBy(a => a.EmailId)
+                .Include(a => a.Country)
+                .Include(a => a.User)
+                .ToListAsync();
         }
         public async Task<Account?> GetAccountAsync(int emailId)
         {
-            return await _context.Accounts.FirstOrDefaultAsync(a => a.EmailId == emailId);
+            return await _context.Accounts
+                .Include(a => a.Country)
+                .Include(a => a.User)
+                .FirstOrDefaultAsync(a => a.EmailId == emailId);
         }
         public async Task<bool> AccountExistsAsync(int emailId)
         {
@@ -132,11 +145,21 @@ namespace SteamAPI.Services
         #region Country
         public async Task<IEnumerable<Country>> GetAllCountriesAsync()
         {
-            return await _context.Countries.OrderBy(c => c.CountryId).ToListAsync();
+            return await _context.Countries.OrderBy(c => c.CountryId)
+                .Include(c => c.Companies)
+                .Include(c => c.Servers)
+                .Include(c => c.Developers)
+                .Include(c => c.Accounts)
+                .ToListAsync();
         }
         public async Task<Country?> GetCountryAsync(int countryId)
         {
-            return await _context.Countries.FirstOrDefaultAsync(c => c.CountryId == countryId);
+            return await _context.Countries
+                .Include(c => c.Companies)
+                .Include(c => c.Servers)
+                .Include(c => c.Developers)
+                .Include(c => c.Accounts)
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
         }
         public async Task<bool> CountryExistsAsync(int countryId)
         {
@@ -160,11 +183,21 @@ namespace SteamAPI.Services
         #region Company
         public async Task<IEnumerable<Company>> GetAllCompaniesAsync()
         {
-            return await _context.Companies.OrderBy(c => c.CompanyId).ToListAsync();
+            return await _context.Companies
+                .Include(c => c.Servers)
+                .Include(c => c.Countries)
+                .Include(c => c.Developers)
+                .Include(c => c.Games)
+                .OrderBy(c => c.CompanyId).ToListAsync();
         }
         public async Task<Company?> GetCompanyAsync(int companyId)
         {
-            return await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
+            return await _context.Companies
+                .Include(c => c.Servers)
+                .Include(c => c.Countries)
+                .Include(c => c.Developers)
+                .Include(c => c.Games)
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
         }
         public async Task<bool> CompanyExistsAsync(int companyId)
         {
@@ -188,11 +221,19 @@ namespace SteamAPI.Services
         #region Server
         public async Task<IEnumerable<Server>> GetAllServersAsync()
         {
-            return await _context.Servers.OrderBy(s => s.ServerId).ToListAsync();
+            return await _context.Servers.OrderBy(s => s.ServerId)
+                .Include(s => s.Company)
+                .Include(s => s.Country)
+                .Include(s => s.Game)
+                .ToListAsync();
         }
         public async Task<Server?> GetServerAsync(int serverId)
         {
-            return await _context.Servers.FirstOrDefaultAsync(s => s.ServerId == serverId);
+            return await _context.Servers
+                .Include(s => s.Company)
+                .Include(s => s.Country)
+                .Include(s => s.Game)
+                .FirstOrDefaultAsync(s => s.ServerId == serverId);
         }
         public async Task<bool> ServerExistsAsync(int serverId)
         {
@@ -216,11 +257,19 @@ namespace SteamAPI.Services
         #region Developer
         public async Task<IEnumerable<Developer>> GetAllDevelopersAsync()
         {
-            return await _context.Devs.OrderBy(d => d.DevId).ToListAsync();
+            return await _context.Devs.OrderBy(d => d.DevId)
+                .Include(d => d.Company)
+                .Include(d => d.Country)
+                .Include(d => d.Games)
+                .ToListAsync();
         }
         public async Task<Developer?> GetDeveloperAsync(int devId)
         {
-            return await _context.Devs.FirstOrDefaultAsync(s => s.DevId == devId);
+            return await _context.Devs
+                .Include(d => d.Company)
+                .Include(d => d.Country)
+                .Include(d => d.Games)
+                .FirstOrDefaultAsync(s => s.DevId == devId);
         }
         public async Task<bool> DeveloperExistsAsync(int devId)
         {

@@ -4,20 +4,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SteamDomain
 {
     public class Game
-    {        
-        public Game() 
-        {
-            Users = new List<User?>();
-            Developers = new List<Developer>();
-            Servers = new List<Server>();
-        }
-        
+    {
+        [Key]
         public int GameId { get; set; }
+        [Required]
         public string Title { get; set; }
         public string Gender { get; set; }
+
+        [ForeignKey("Company")]
         public int CompanyId { get; set; }
-        public List<Developer> Developers { get; set; }
-        public List<Server>? Servers { get; set; }
-        public List<User?> Users { get; set; }
+        public Company Company { get; set; }
+
+        public ICollection<Developer> Developers { get; set; } = new List<Developer>();
+
+        public ICollection<Server?> Servers { get; set; } = new List<Server?>();
+
+        public ICollection<User?> Users { get; set; } = new List<User?>();
     }
 }

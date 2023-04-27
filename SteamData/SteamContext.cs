@@ -26,6 +26,7 @@ namespace SteamData
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
             var userList = new User[]
             {
                 new User { UserId = 1, Nickname = "dalsyan"},
@@ -35,7 +36,7 @@ namespace SteamData
                 new User { UserId = 5, Nickname = "ReiSapo"}
             };
             modelBuilder.Entity<User>().HasData(userList);
-
+            
             var companyList = new Company[]
             {
                 new Company { CompanyId = 1, CompanyName = "Riot Games"},
@@ -45,7 +46,7 @@ namespace SteamData
                 new Company { CompanyId = 5, CompanyName = "Focus Entertainment"}
             };
             modelBuilder.Entity<Company>().HasData(companyList);
-
+            
             var gameList = new Game[]
             {
                 new Game { GameId = 1, Title = "League of Legends", Gender = "MOBA", CompanyId = 1},
@@ -54,7 +55,7 @@ namespace SteamData
                 new Game { GameId = 4, Title = "Stardew Valley", Gender = "Simulator", CompanyId = 2},
             };
             modelBuilder.Entity<Game>().HasData(gameList);
-
+            
             var countryList = new Country[]
             {
                 new Country { CountryId = 1, CountryName = "Spain"},
@@ -64,16 +65,35 @@ namespace SteamData
                 new Country { CountryId = 5, CountryName = "China"}
             };
             modelBuilder.Entity<Country>().HasData(countryList);
-
+            
             var accountList = new Account[]
             {
-                new Account { EmailId = 1, UserId = 1 ,Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01)},
-                new Account { EmailId = 2, UserId = 2, Email = "tentxten@email.com", Password = "0002", CreationDate = new DateTime(2000, 04, 30) },
-                new Account { EmailId = 3, UserId = 3, Email = "jamonsioo@email.com", Password = "0003", CreationDate = new DateTime(2000, 08, 25) },
-                new Account { EmailId = 4, UserId = 4, Email = "enricdetu@email.com", Password = "0004", CreationDate = new DateTime(2001, 07, 15) },
-                new Account { EmailId = 5, UserId = 5, Email = "reisapo@email.com", Password = "0005", CreationDate = new DateTime(2000, 12, 08)}
+                new Account { EmailId = 1, Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01), CountryId = 1, UserId = 1},
+                new Account { EmailId = 2, Email = "tentxten@email.com", Password = "0002", CreationDate = new DateTime(2000, 04, 30), CountryId = 1, UserId = 2 },
+                new Account { EmailId = 3, Email = "jamonsioo@email.com", Password = "0003", CreationDate = new DateTime(2000, 08, 25), CountryId = 1, UserId = 3 },
+                new Account { EmailId = 4, Email = "enricdetu@email.com", Password = "0004", CreationDate = new DateTime(2001, 07, 15), CountryId = 1, UserId = 4 },
+                new Account { EmailId = 5, Email = "reisapo@email.com", Password = "0005", CreationDate = new DateTime(2000, 12, 08), CountryId = 1, UserId = 5}
             };
             modelBuilder.Entity<Account>().HasData(accountList);
+
+            var devList = new Developer[]
+            {
+                new Developer { DevId = 1, FirstName = "Pau", LastName = "Vidal", CountryId = 1, CompanyId = 1 },
+                new Developer { DevId = 2, FirstName = "Ana", LastName = "Pérez", CountryId = 1, CompanyId = 1 },
+                new Developer { DevId = 3, FirstName = "Enric", LastName = "Puigcerver", CountryId = 1, CompanyId = 2 },
+                new Developer { DevId = 4, FirstName = "Ivan", LastName = "Fullana", CountryId = 1, CompanyId = 4},
+                new Developer { DevId = 5, FirstName = "Mario", LastName = "Valencia", CountryId = 3, CompanyId = 2 }
+            };
+            modelBuilder.Entity<Developer>().HasData(devList);
+
+            var serverList = new Server[]
+            {
+                new Server { ServerId = 1, ServerName = "Riot 1", GameId = 1, CompanyId = 1, CountryId = 2 },
+                new Server { ServerId = 2, ServerName = "Riot 2", GameId = 1, CompanyId = 1, CountryId = 4 },
+                new Server { ServerId = 3, ServerName = "Epic 1", GameId = 2, CompanyId = 4, CountryId = 4 },
+                new Server { ServerId = 4, ServerName = "Stardew 1", GameId = 4, CompanyId = 2, CountryId = 4 },
+            };
+            modelBuilder.Entity<Server>().HasData(serverList);
         }
     }
 }
