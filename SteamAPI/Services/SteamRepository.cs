@@ -79,6 +79,62 @@ namespace SteamAPI.Services
             return await _context.Games
                 .FirstOrDefaultAsync(g => g.GameId == gameId);
         }
+        public async Task<Company> GetGameCompanyAsync(int gameId)
+        {
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
+            var company = await _context.Companies.Where(c => c.CompanyId == game.CompanyId).FirstOrDefaultAsync();
+            return company;
+        }
+        public async Task<IEnumerable<User?>> GetGameUsersAsync(int gameId)
+        {
+            var game = await _context.Games
+                .Include(g => g.Users)
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
+            var users = game.Users.ToList();
+            return users;
+        }
+        public async Task<IEnumerable<Developer?>> GetGameDevsAsync(int gameId)
+        {
+            var game = await _context.Games
+                .Include(g => g.Developers)
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
+            var devs = game.Developers.ToList();
+            return devs;
+        }
+        public async Task<IEnumerable<Server?>> GetGameServersAsync(int gameId)
+        {
+            var game = await _context.Games
+                .Include(g => g.Servers)
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
+            var servers = game.Servers.ToList();
+            return servers;
+        }
+
+        public async Task AddGameUserAsync(Game game, User user)
+        {
+            if (!GameExistsAsync(user.UserId).Result)
+            {
+                game.Users.Add(user);
+                _context.Users.Add(user);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddGameDevAsync(Game game)
+        {
+            if (!GameExistsAsync(game.GameId).Result)
+            {
+                _context.Games.Add(game);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddGameServerAsync(Game game)
+        {
+            if (!GameExistsAsync(game.GameId).Result)
+            {
+                _context.Games.Add(game);
+            }
+            await _context.SaveChangesAsync();
+        }
         #endregion
 
         #region User
@@ -280,6 +336,17 @@ namespace SteamAPI.Services
         {
             _context.Servers.Remove(server);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Server>> GetAllServersBaseAsync()
+        {
+            return await _context.Servers.OrderBy(s => s.ServerId)
+                .ToListAsync();
+        }
+        public async Task<Server?> GetServerBaseAsync(int serverId)
+        {
+            return await _context.Servers
+                .FirstOrDefaultAsync(s => s.ServerId == serverId);
         }
         #endregion
 

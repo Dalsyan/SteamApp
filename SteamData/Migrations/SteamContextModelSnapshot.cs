@@ -34,7 +34,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("CountriesCountryId");
 
-                    b.ToTable("CompanyCountry");
+                    b.ToTable("CompanyCountry", (string)null);
                 });
 
             modelBuilder.Entity("DeveloperGame", b =>
@@ -49,7 +49,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("GamesGameId");
 
-                    b.ToTable("DeveloperGame");
+                    b.ToTable("DeveloperGame", (string)null);
                 });
 
             modelBuilder.Entity("GameUser", b =>
@@ -64,7 +64,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("UsersUserId");
 
-                    b.ToTable("GameUser");
+                    b.ToTable("GameUser", (string)null);
                 });
 
             modelBuilder.Entity("SteamDomain.Account", b =>
@@ -99,7 +99,7 @@ namespace SteamData.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
 
                     b.HasData(
                         new
@@ -163,7 +163,7 @@ namespace SteamData.Migrations
 
                     b.HasKey("CompanyId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
 
                     b.HasData(
                         new
@@ -207,7 +207,7 @@ namespace SteamData.Migrations
 
                     b.HasKey("CountryId");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
 
                     b.HasData(
                         new
@@ -264,7 +264,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Devs");
+                    b.ToTable("Devs", (string)null);
 
                     b.HasData(
                         new
@@ -332,7 +332,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
 
                     b.HasData(
                         new
@@ -394,7 +394,7 @@ namespace SteamData.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Servers");
+                    b.ToTable("Servers", (string)null);
 
                     b.HasData(
                         new
@@ -445,7 +445,7 @@ namespace SteamData.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasData(
                         new

@@ -23,6 +23,7 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        #region GET
         // GET: api/servers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServerDTO>>> GetServers()
@@ -31,12 +32,20 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<ServerDTO>>(servers));
         }
 
+        // GET: api/servers/base
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<ServerBaseDTO>>> GetServersBase()
+        {
+            var servers = await _steamRepo.GetAllServersBaseAsync();
+            return Ok(_mapper.Map<IEnumerable<ServerBaseDTO>>(servers));
+        }
+
         // GET: api/servers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ServerDTO>> GetServer(int id)
         {
             var Server = await _steamRepo.GetServerAsync(id);
-            if (Server == null) 
+            if (Server == null)
             {
                 return NotFound();
             }
@@ -44,8 +53,25 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<ServerDTO>(Server));
         }
 
-        // PUT: api/servers/5
+        // GET: api/servers/5/base
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<ServerBaseDTO>> GetServerBase(int id)
+        {
+            var Server = await _steamRepo.GetServerBaseAsync(id);
+            if (Server == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<ServerBaseDTO>(Server));
+        }
+        #endregion
+
+
+        #region PUT
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        // PUT: api/servers/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutServer(int id, ServerForUpdateDTO ServerDTO)
         {
@@ -62,9 +88,12 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
+
+        #region POST
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
         // POST: api/servers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult> PostServer(ServerForCreationDTO Server)
         {
@@ -75,7 +104,9 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
 
+        #region DELETE
         // DELETE: api/servers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteServer(int id)
@@ -90,5 +121,6 @@ namespace SteamAPI.Controllers
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }
+        #endregion
     }
 }

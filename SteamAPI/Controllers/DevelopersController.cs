@@ -25,12 +25,21 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        #region GET
         // GET: api/developers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DeveloperDTO>>> GetDevelopers()
         {
             var developers = await _steamRepo.GetAllDevelopersAsync();
             return Ok(_mapper.Map<IEnumerable<DeveloperDTO>>(developers));
+        }
+
+        // GET: api/developers/base
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<DeveloperBaseDTO>>> GetDevelopersBase()
+        {
+            var developers = await _steamRepo.GetAllDevelopersAsync();
+            return Ok(_mapper.Map<IEnumerable<DeveloperBaseDTO>>(developers));
         }
 
         // GET: api/developers/5
@@ -46,8 +55,23 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<DeveloperDTO>(developer));
         }
 
-        // PUT: api/developers/5
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<DeveloperBaseDTO>> GetDeveloperBase(int id)
+        {
+            var developer = await _steamRepo.GetDeveloperAsync(id);
+            if (developer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<DeveloperBaseDTO>(developer));
+        }
+        #endregion
+
+        #region PUT
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        // PUT: api/developers/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutDeveloper(int id, DeveloperForUpdateDTO developerDTO)
         {
@@ -65,7 +89,6 @@ namespace SteamAPI.Controllers
         }
 
         // PUT: api/developers/5/games
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}/games")]
         public async Task<ActionResult> PutDeveloperGame(int id, GameForCreationDTO game)
         {
@@ -92,9 +115,12 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
+
+        #region POST
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
         // POST: api/developers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult> PostDeveloper(DeveloperForCreationDTO developer)
         {
@@ -105,7 +131,9 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
 
+        #region DELETE
         // DELETE: api/developers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDeveloper(int id)
@@ -120,5 +148,6 @@ namespace SteamAPI.Controllers
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }
+        #endregion
     }
 }
