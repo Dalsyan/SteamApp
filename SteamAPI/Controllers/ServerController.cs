@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.CountryDTOs;
+using SteamAPI.Models.GameDTOs;
 using SteamAPI.Models.ServerDTOs;
 using SteamAPI.Services;
 using SteamData;
@@ -44,29 +47,81 @@ namespace SteamAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServerDTO>> GetServer(int id)
         {
-            var Server = await _steamRepo.GetServerAsync(id);
-            if (Server == null)
+            var server = await _steamRepo.GetServerAsync(id);
+            if (server == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<ServerDTO>(Server));
+            return Ok(_mapper.Map<ServerDTO>(server));
         }
 
         // GET: api/servers/5/base
         [HttpGet("{id}/base")]
         public async Task<ActionResult<ServerBaseDTO>> GetServerBase(int id)
         {
-            var Server = await _steamRepo.GetServerBaseAsync(id);
-            if (Server == null)
+            var server = await _steamRepo.GetServerBaseAsync(id);
+            if (server == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<ServerBaseDTO>(Server));
+            return Ok(_mapper.Map<ServerBaseDTO>(server));
+        }
+
+        // GET: api/servers/5/game
+        [HttpGet("{id}/game")]
+        public async Task<ActionResult<GameBaseDTO>> GetServerGame(int id)
+        {
+            if (!await _steamRepo.ServerExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var game = await _steamRepo.GetServerGameAsync(id);
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<GameBaseDTO>(game));
+        }
+
+        // GET: api/servers/5/country
+        [HttpGet("{id}/country")]
+        public async Task<ActionResult<CountryBaseDTO>> GetServerCountry(int id)
+        {
+            if (!await _steamRepo.ServerExistsAsync(id)) { 
+                return NotFound(); 
+            }
+
+            var country = await _steamRepo.GetServerCountryAsync(id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CountryBaseDTO>(country));
+        }
+
+        // GET: api/servers/5/company
+        [HttpGet("{id}/company")]
+        public async Task<ActionResult<CompanyBaseDTO>> GetServerCompany(int id)
+        {
+            if (!await _steamRepo.ServerExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var company = await _steamRepo.GetServerCompanyAsync(id);
+            if (company == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CompanyBaseDTO>(company));
         }
         #endregion
-
 
         #region PUT
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

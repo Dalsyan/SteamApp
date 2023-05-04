@@ -23,6 +23,7 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        #region GET
         // GET: api/accounts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AccountDTO>>> GetAccounts()
@@ -44,8 +45,32 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<AccountDTO>(account));
         }
 
-        // PUT: api/accounts/5
+        // GET: api/accounts/base
+        [HttpGet("base")]
+        public async Task<ActionResult<IEnumerable<AccountBaseDTO>>> GetAccountsBase()
+        {
+            var accounts = await _steamRepo.GetAllAccountsBaseAsync();
+            return Ok(_mapper.Map<IEnumerable<AccountBaseDTO>>(accounts));
+        }
+
+        // GET: api/accounts/5/base
+        [HttpGet("{id}/base")]
+        public async Task<ActionResult<AccountBaseDTO>> GetAccountBase(int id)
+        {
+            var account = await _steamRepo.GetAccountBaseAsync(id);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<AccountBaseDTO>(account));
+        }
+        #endregion
+
+        #region PUT
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        // PUT: api/accounts/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutAccount(int id, AccountForUpdateDTO accountDTO)
         {
@@ -61,9 +86,12 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
+
+        #region POST
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
         // POST: api/accounts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult> PostAccount(AccountForCreationDTO account)
         {
@@ -74,7 +102,9 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
 
+        #region DELETE
         // DELETE: api/accounts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
@@ -84,10 +114,10 @@ namespace SteamAPI.Controllers
             {
                 return NotFound();
             }
-
             await _steamRepo.DeleteAccountAsync(account);
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }
+        #endregion
     }
 }

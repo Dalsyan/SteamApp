@@ -11,11 +11,11 @@ namespace SteamDomain
         [Required]
         public string CountryName { get; set; }
 
-        public ICollection<Account> Accounts { get; set; } = new List<Account>();
+        public ICollection<Account?> Accounts { get; set; } = new List<Account?>();
 
         public ICollection<Company?> Companies { get; set; } = new List<Company?>();
 
-        public ICollection<Server> Servers { get; set; } = new List<Server>();
+        public ICollection<Server?> Servers { get; set; } = new List<Server?>();
 
         public ICollection<Developer?> Developers { get; set; } = new List<Developer?>();
     }

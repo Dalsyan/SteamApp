@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SteamAPI.Models.AccountDTOs;
 using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.CountryDTOs;
 using SteamAPI.Models.DeveloperDTOs;
 using SteamAPI.Models.GameDTOs;
 using SteamAPI.Models.ServerDTOs;
 using SteamAPI.Models.UserDTOs;
 using SteamAPI.Services;
-using SteamData;
 using SteamDomain;
 
 namespace SteamAPI.Controllers
@@ -124,7 +125,7 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<IEnumerable<DeveloperBaseDTO>>(devs));
         }
 
-        // GET: api/games/5/servers
+        // GET: api/games/servers
         [HttpGet("{id}/servers")]
         public async Task<ActionResult<IEnumerable<ServerBaseDTO>>> GetGameServers(int id)
         {
@@ -141,11 +142,58 @@ namespace SteamAPI.Controllers
 
             return Ok(_mapper.Map<IEnumerable<ServerBaseDTO>>(servers));
         }
+
+        // GET: api/games/groupCompany
+        [HttpGet("groupCompany")]
+        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByCompany()
+        {
+            var games = await _steamRepo.GetAllGamesAsync();
+            var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
+            IEnumerable<IGrouping<int, GameBaseDTO>> groupGameCompany = gamesDTOs.GroupBy(g => g.CompanyId);
+            return Ok(groupGameCompany);
+        }
+
+        // GET: api/games/groupGender
+        [HttpGet("groupGender")]
+        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByGender()
+        {
+            var games = await _steamRepo.GetAllGamesAsync();
+            var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
+            var groupGameGender = gamesDTOs.GroupBy(g => g.Gender);         // IEnumerable<IGrouping<string, GameBaseDTO>>
+            return Ok(groupGameGender);
+        }
+        /*
+        // GET: api/games/usersCount
+        [HttpGet("usersCount")]
+        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByUsersCount()
+        {
+            var games = await _steamRepo.Algo();
+            var gamesDTOs = _mapper.Map<IEnumerable<GameDTO>>(games);
+            var groupGameGender = gamesDTOs.OrderBy(g => g.Users.Count).GroupBy(g => g.Users.Count);         // IEnumerable<IGrouping<string, GameBaseDTO>>
+            return Ok(groupGameGender);
+        }
+        */
+        // GET: api/games/join
+        [HttpGet("join")]
+        public async Task<ActionResult<IEnumerable<CountryBaseDTO>>> GetGamesJoinCompanies()
+        {
+            var accounts = await _steamRepo.GetAllAccountsAsync();
+            var countries = await _steamRepo.GetAllCountriesAsync();
+
+            var gameC = countries           // source
+                .Join(accounts,             // target
+                    c => c.CountryId,       // FK
+                    a => a.CountryId,       // PK
+                    (c, a) => new { Country = c, Account = a })    // project result
+                .Select(x => x.Country);    // select result
+
+            return Ok(_mapper.Map<IEnumerable<CountryBaseDTO>>(gameC));
+        }
         #endregion
 
         #region PUT
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        
+
         // PUT: api/games/5
         [HttpPut("{id}")]
         public async Task<ActionResult> PutGame(int id, GameForUpdateDTO gameDTO)
@@ -158,63 +206,6 @@ namespace SteamAPI.Controllers
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
            
             _mapper.Map(gameDTO, game);
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // PUT: api/games/5/users
-        [HttpPut("{id}/users")]
-        public async Task<ActionResult> PutGameUser(int id, UserBaseDTO userDTO)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-
-            var user = _mapper.Map<User>(userDTO);
-            game.Users.Add(user);
-
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // PUT: api/games/5/devs
-        [HttpPut("{id}/devs")]
-        public async Task<ActionResult> PutGameDev(int id, DeveloperBaseDTO devDTO)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-
-            var dev = _mapper.Map<Developer>(devDTO);
-            game.Developers.Add(dev);
-
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // PUT: api/games/5/servers
-        [HttpPut("{id}/servers")]
-        public async Task<ActionResult> PutGameServer(int id, ServerBaseDTO serverDTO)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-
-            var server = _mapper.Map<Server>(serverDTO);
-            game.Servers.Add(server);
-
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
@@ -236,60 +227,11 @@ namespace SteamAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/games/5/users
+        // POST: api/games/1/users
         [HttpPost("{id}/users")]
-        public async Task<ActionResult> PostGameUser(int id, UserForCreationDTO user)
+        public async Task<ActionResult> PostGameUser(int id, int userId)
         {
-            var game = await _steamRepo.GetGameAsync(id);
-            if (! await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var finalUser = _mapper.Map<User>(user);
-
-            await _steamRepo.AddGameUserAsync(game, finalUser);
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // POST: api/games/5/devs
-        [HttpPost("{id}/devs")]
-        public async Task<ActionResult> PostGameDev(int id, DeveloperForCreationDTO dev)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-
-            var finalDev = _mapper.Map<Developer>(dev);
-
-            game.Developers.Add(finalDev);
-            // await _steamRepo.AddDAsync(finalDev);
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        // POST: api/games/5/servers
-        [HttpPost("{id}/servers")]
-        public async Task<ActionResult> PostGameServer(int id, ServerForCreationDTO server)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-
-            var finalServer = _mapper.Map<Server>(server);
-
-            game.Servers.Add(finalServer);
-            // await _steamRepo.AddGameAsync(finalServer);
-            await _steamRepo.SaveChangesAsync();
+            await _steamRepo.Algo(id, userId);
 
             return NoContent();
         }

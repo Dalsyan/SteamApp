@@ -11,6 +11,7 @@ namespace SteamAPI.Profiles
             CreateMap<CountryForCreationDTO, SteamDomain.Country>();
             CreateMap<CountryForUpdateDTO, SteamDomain.Country>();
             CreateMap<SteamDomain.Country, CountryBaseDTO>();
+            CreateMap<CountryBaseDTO, SteamDomain.Country>();
         }
     }
 }

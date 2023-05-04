@@ -18,23 +18,25 @@ namespace SteamAPI.Services
 
         Task<IEnumerable<Game>> GetAllGamesBaseAsync();
         Task<Game?> GetGameBaseAsync(int gameId);
+        Task<Company> GetGameCompanyAsync(int gameId);
+        Task<IEnumerable<User?>> GetGameUsersAsync(int gameId);
+        Task<IEnumerable<Developer?>> GetGameDevsAsync(int gameId);
+        Task<IEnumerable<Server?>> GetGameServersAsync(int gameId);
+
+        Task Algo(int gameId, int userId);
         #endregion
 
         #region User
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User?> GetUserAsync(int userId);
         Task<bool> UserExistsAsync(int userId);
-        Task AddUserAsync(User user);
+        // Task AddUserAsync(User user);
         Task DeleteUserAsync(User user);
 
         Task<IEnumerable<User>> GetAllUsersBaseAsync();
         Task<User?> GetUserBaseAsync(int userId);
-        Task<Company> GetGameCompanyAsync(int gameId);
-        Task<IEnumerable<User?>> GetGameUsersAsync(int gameId);
-        Task<IEnumerable<Developer?>> GetGameDevsAsync(int gameId);
-        Task<IEnumerable<Server?>> GetGameServersAsync(int gameId);
-
-        Task AddGameUserAsync(Game game, User user);
+        Task<IEnumerable<Game?>> GetUserGamesAsync(int userId);
+        Task<Account> GetUserAccountAsync(int userId);
         #endregion
 
         #region Account
@@ -43,6 +45,9 @@ namespace SteamAPI.Services
         Task<bool> AccountExistsAsync(int emailId);
         Task AddAccountAsync(Account account);
         Task DeleteAccountAsync(Account account);
+
+        Task<IEnumerable<Account>> GetAllAccountsBaseAsync();
+        Task<Account?> GetAccountBaseAsync(int emailId);
         #endregion
 
         #region Country
@@ -51,6 +56,13 @@ namespace SteamAPI.Services
         Task<bool> CountryExistsAsync(int countryId);
         Task AddCountryAsync(Country country);
         Task DeleteCountryAsync(Country country);
+
+        Task<IEnumerable<Country>> GetAllCountriesBaseAsync();
+        Task<Country?> GetCountryBaseAsync(int countryId);
+        Task<IEnumerable<Account?>> GetCountryAccountsAsync(int countryId);
+        Task<IEnumerable<Company?>> GetCountryCompaniesAsync(int countryId);
+        Task<IEnumerable<Server?>> GetCountryServersAsync(int countryId);
+        Task<IEnumerable<Developer?>> GetCountryDevsAsync(int countryId);
         #endregion
 
         #region Company
@@ -73,6 +85,9 @@ namespace SteamAPI.Services
 
         Task<IEnumerable<Server>> GetAllServersBaseAsync();
         Task<Server?> GetServerBaseAsync(int serverId);
+        Task<Game?> GetServerGameAsync(int serverId);
+        Task<Country?> GetServerCountryAsync(int serverId);
+        Task<Company?> GetServerCompanyAsync(int serverId);
         #endregion
 
         #region Developer

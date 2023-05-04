@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SteamAPI.Models.AccountDTOs;
+using SteamAPI.Models.GameDTOs;
 using SteamAPI.Models.UserDTOs;
 using SteamAPI.Services;
 using SteamData;
@@ -23,6 +25,7 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        #region GET
         // GET: api/users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
@@ -65,6 +68,46 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<UserBaseDTO>(user));
         }
 
+        // GET: api/users/5/games
+        [HttpGet("{id}/games")]
+        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetUserGames(int id)
+        {
+            if (!await _steamRepo.UserExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var gameList = await _steamRepo.GetUserGamesAsync(id);
+
+            if (gameList == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(gameList));
+        }
+
+        // GET: api/users/5/account
+        [HttpGet("{id}/account")]
+        public async Task<ActionResult<AccountBaseDTO>> GetUserAccount(int id)
+        {
+            if (!await _steamRepo.UserExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var account = await _steamRepo.GetAccountAsync(id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<AccountBaseDTO>(account));
+        }
+        #endregion
+
+        #region PUT
         // PUT: api/users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -107,9 +150,16 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
+
+        #region POST
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        // No hay llamada POST porque no tiene sentido crear un usuario sin que exista su cuenta
+        // Primero creas la cuenta, y por tanto el usuario
 
         // POST: api/users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /*
         [HttpPost]
         public async Task<ActionResult> PostUser(UserForCreationDTO user)
         {
@@ -120,7 +170,10 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        */
+        #endregion
 
+        #region DELETE
         // DELETE: api/users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
@@ -135,5 +188,6 @@ namespace SteamAPI.Controllers
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }
+        #endregion
     }
 }

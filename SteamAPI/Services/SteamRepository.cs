@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models;
+using SteamAPI.Models.AccountDTOs;
 using SteamData;
 using SteamDomain;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -110,30 +112,10 @@ namespace SteamAPI.Services
             return servers;
         }
 
-        public async Task AddGameUserAsync(Game game, User user)
+        public async Task Algo(int gameId, int userId)
         {
-            if (!GameExistsAsync(user.UserId).Result)
-            {
-                game.Users.Add(user);
-                _context.Users.Add(user);
-            }
-            await _context.SaveChangesAsync();
-        }
-        public async Task AddGameDevAsync(Game game)
-        {
-            if (!GameExistsAsync(game.GameId).Result)
-            {
-                _context.Games.Add(game);
-            }
-            await _context.SaveChangesAsync();
-        }
-        public async Task AddGameServerAsync(Game game)
-        {
-            if (!GameExistsAsync(game.GameId).Result)
-            {
-                _context.Games.Add(game);
-            }
-            await _context.SaveChangesAsync();
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
         }
         #endregion
 
@@ -156,6 +138,8 @@ namespace SteamAPI.Services
         {
             return await _context.Users.AnyAsync(u => u.UserId == userId);
         }
+
+        /* public async Task AddUserAsync(User user)
         public async Task AddUserAsync(User user)
         {
             if (!UserExistsAsync(user.UserId).Result)
@@ -164,6 +148,8 @@ namespace SteamAPI.Services
             }
             await _context.SaveChangesAsync();
         }
+        */
+
         public async Task DeleteUserAsync(User user)
         {
             _context.Users.Remove(user);
@@ -179,6 +165,22 @@ namespace SteamAPI.Services
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+        public async Task<IEnumerable<Game?>> GetUserGamesAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Games)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var games = user.Games.ToList();
+            return games;
+        }
+        public async Task<Account> GetUserAccountAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Account)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var account = user.Account;
+            return account;
         }
         #endregion
 
@@ -211,8 +213,21 @@ namespace SteamAPI.Services
         }
         public async Task DeleteAccountAsync(Account account)
         {
+            var user = account.User;
+            _context.Users.Remove(user);
             _context.Accounts.Remove(account);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Account>> GetAllAccountsBaseAsync()
+        {
+            return await _context.Accounts.OrderBy(a => a.EmailId)
+                .ToListAsync();
+        }
+        public async Task<Account?> GetAccountBaseAsync(int emailId)
+        {
+            return await _context.Accounts
+                .FirstOrDefaultAsync(a => a.EmailId == emailId);
         }
         #endregion
 
@@ -251,6 +266,49 @@ namespace SteamAPI.Services
         {
             _context.Countries.Remove(country);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Country>> GetAllCountriesBaseAsync()
+        {
+            return await _context.Countries.OrderBy(c => c.CountryId)
+                .ToListAsync();
+        }
+        public async Task<Country?> GetCountryBaseAsync(int countryId)
+        {
+            return await _context.Countries
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
+        }
+        public async Task<IEnumerable<Account?>> GetCountryAccountsAsync(int countryId)
+        {
+            var country = await _context.Countries
+                .Include(g => g.Accounts)
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
+            var accounts = country.Accounts.ToList();
+            return accounts;
+        }
+        public async Task<IEnumerable<Company?>> GetCountryCompaniesAsync(int countryId)
+        {
+            var country = await _context.Countries
+                .Include(g => g.Companies)
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
+            var companies = country.Companies.ToList();
+            return companies;
+        }
+        public async Task<IEnumerable<Server?>> GetCountryServersAsync(int countryId)
+        {
+            var country = await _context.Countries
+                .Include(g => g.Servers)
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
+            var servers = country.Servers.ToList();
+            return servers;
+        }
+        public async Task<IEnumerable<Developer?>> GetCountryDevsAsync(int countryId)
+        {
+            var country = await _context.Countries
+                .Include(g => g.Developers)
+                .FirstOrDefaultAsync(c => c.CountryId == countryId);
+            var devs = country.Developers.ToList();
+            return devs;
         }
         #endregion
 
@@ -347,6 +405,27 @@ namespace SteamAPI.Services
         {
             return await _context.Servers
                 .FirstOrDefaultAsync(s => s.ServerId == serverId);
+        }
+        public async Task<Game?> GetServerGameAsync(int serverId)
+        {
+            var server = await _context.Servers
+                .Include(s => s.Game)
+                .FirstOrDefaultAsync(s => s.ServerId == serverId);
+            return server.Game;
+        }
+        public async Task<Country?> GetServerCountryAsync(int serverId)
+        {
+            var server = await _context.Servers
+                .Include(s => s.Country)
+                .FirstOrDefaultAsync(s => s.ServerId == serverId);
+            return server.Country;
+        }
+        public async Task<Company?> GetServerCompanyAsync(int serverId)
+        {
+            var server = await _context.Servers
+                .Include(s => s.Company)
+                .FirstOrDefaultAsync(s => s.ServerId == serverId);
+            return server.Company;
         }
         #endregion
 

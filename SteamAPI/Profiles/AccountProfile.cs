@@ -11,6 +11,7 @@ namespace SteamAPI.Profiles
             CreateMap<AccountForCreationDTO, SteamDomain.Account>();
             CreateMap<AccountForUpdateDTO, SteamDomain.Account>();
             CreateMap<SteamDomain.Account, AccountBaseDTO>();
+            CreateMap<AccountBaseDTO, SteamDomain.Account>();
         }
     }
 }
