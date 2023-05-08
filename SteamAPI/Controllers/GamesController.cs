@@ -9,6 +9,7 @@ using SteamAPI.Models.GameDTOs;
 using SteamAPI.Models.ServerDTOs;
 using SteamAPI.Models.UserDTOs;
 using SteamAPI.Services;
+using SteamData.Models;
 using SteamDomain;
 
 namespace SteamAPI.Controllers
@@ -172,7 +173,7 @@ namespace SteamAPI.Controllers
             var groupGameGender = gamesDTOs.OrderBy(g => g.Users.Count).GroupBy(g => g.Users.Count);         // IEnumerable<IGrouping<string, GameBaseDTO>>
             return Ok(groupGameGender);
         }
-        */
+        
         // GET: api/games/join
         [HttpGet("join")]
         public async Task<ActionResult<IEnumerable<CountryBaseDTO>>> GetGamesJoinCompanies()
@@ -189,6 +190,7 @@ namespace SteamAPI.Controllers
 
             return Ok(_mapper.Map<IEnumerable<CountryBaseDTO>>(gameC));
         }
+        */
         #endregion
 
         #region PUT
@@ -226,12 +228,49 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
-
+                
         // POST: api/games/1/users
         [HttpPost("{id}/users")]
         public async Task<ActionResult> PostGameUser(int id, int userId)
         {
-            await _steamRepo.Algo(id, userId);
+            if (!await _steamRepo.GameExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
+
+            if (!await _steamRepo.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _steamRepo.GetContext().Users.AsTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+
+            await _steamRepo.AddUserToGame(game, user);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/games/1/devs
+        [HttpPost("{id}/devs")]
+        public async Task<ActionResult> PostGameDev(int id, int devId)
+        {
+            if (!await _steamRepo.GameExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
+
+            if (!await _steamRepo.DeveloperExistsAsync(devId))
+            {
+                return NotFound();
+            }
+
+            var dev = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == devId);
+
+            await _steamRepo.AddDevToGame(game, dev);
+            await _steamRepo.SaveChangesAsync();
 
             return NoContent();
         }

@@ -25,8 +25,7 @@ namespace SteamData
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            
+        {            
             var userList = new User[]
             {
                 new User { UserId = 1, Nickname = "dalsyan"},
@@ -36,7 +35,7 @@ namespace SteamData
                 new User { UserId = 5, Nickname = "ReiSapo"}
             };
             modelBuilder.Entity<User>().HasData(userList);
-            
+
             var companyList = new Company[]
             {
                 new Company { CompanyId = 1, CompanyName = "Riot Games"},

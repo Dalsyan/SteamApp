@@ -41,7 +41,7 @@ namespace SteamAPI.Services
                 .Include(g => g.Company)
                 .Include(g => g.Users)
                 .Include(g => g.Developers)
-                .Include(g => g.Servers)
+                .Include(g => g.Servers).ThenInclude(s => s.Country)
                 .ToListAsync();
         }
         public async Task<Game?> GetGameAsync(int gameId)
@@ -110,13 +110,23 @@ namespace SteamAPI.Services
                 .FirstOrDefaultAsync(g => g.GameId == gameId);
             var servers = game.Servers.ToList();
             return servers;
+        }        
+
+        public async Task AddUserToGame(Game game, User user)
+        {
+            game.Users.Add(user);
+            user.Games.Add(game);
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddDevToGame(Game game, Developer dev)
+        {
+            game.Developers.Add(dev);
+            dev.Games.Add(game);
+
+            await _context.SaveChangesAsync();
         }
 
-        public async Task Algo(int gameId, int userId)
-        {
-            var game = await _context.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-        }
         #endregion
 
         #region User
@@ -138,17 +148,6 @@ namespace SteamAPI.Services
         {
             return await _context.Users.AnyAsync(u => u.UserId == userId);
         }
-
-        /* public async Task AddUserAsync(User user)
-        public async Task AddUserAsync(User user)
-        {
-            if (!UserExistsAsync(user.UserId).Result)
-            {
-                _context.Users.Add(user);
-            }
-            await _context.SaveChangesAsync();
-        }
-        */
 
         public async Task DeleteUserAsync(User user)
         {
@@ -181,6 +180,14 @@ namespace SteamAPI.Services
                 .FirstOrDefaultAsync(u => u.UserId == userId);
             var account = user.Account;
             return account;
+        }
+
+        public async Task AddGameToUser(User user, Game game)
+        {
+            game.Users.Add(user);
+            user.Games.Add(game);
+
+            await _context.SaveChangesAsync();
         }
         #endregion
 
@@ -310,6 +317,14 @@ namespace SteamAPI.Services
             var devs = country.Developers.ToList();
             return devs;
         }
+
+        public async Task AddCompanyToCountry(Country country, Company company)
+        {
+            country.Companies.Add(company);
+            company.Countries.Add(country);
+
+            await _context.SaveChangesAsync();
+        }
         #endregion
 
         #region Company
@@ -358,6 +373,14 @@ namespace SteamAPI.Services
         {
             return await _context.Companies
                 .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        }
+
+        public async Task AddCountryToCompany(Company company, Country country)
+        {
+            country.Companies.Add(company);
+            company.Countries.Add(country);
+
+            await _context.SaveChangesAsync();
         }
         #endregion
 
@@ -473,6 +496,14 @@ namespace SteamAPI.Services
         {
             return await _context.Devs
                 .FirstOrDefaultAsync(d => d.DevId == devId);
+        }
+
+        public async Task AddGameToDev(Developer dev, Game game)
+        {
+            game.Developers.Add(dev);
+            dev.Games.Add(game);
+
+            await _context.SaveChangesAsync();
         }
         #endregion
     }

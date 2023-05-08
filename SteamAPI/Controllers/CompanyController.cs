@@ -24,6 +24,7 @@ namespace SteamAPI.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        #region GET
         // GET: api/companies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CompanyDTO>>> Getcompanies()
@@ -64,9 +65,12 @@ namespace SteamAPI.Controllers
 
             return Ok(_mapper.Map<CompanyBaseDTO>(Company));
         }
+        #endregion
+
+        #region PUT
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
         // PUT: api/companies/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<ActionResult> PutCompany(int id, CompanyForUpdateDTO CompanyDTO)
         {
@@ -83,30 +87,12 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+        #endregion
 
-        // PUT: api/companies/5
+        #region POST
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}/games")]
-        public async Task<ActionResult> PutCompanyGame(int id, GameForCreationDTO game)
-        {
-            if (!await _steamRepo.CompanyExistsAsync(id))
-            {
-                return NotFound();
-            }
-
-            var company = await _steamRepo.GetContext().Companies.AsTracking().FirstOrDefaultAsync(g => g.CompanyId == id);
-
-            var finalGame = _mapper.Map<Game>(game);
-
-            company.Games.Add(finalGame);
-
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         // POST: api/companies
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult> PostCompany(CompanyForCreationDTO Company)
         {
@@ -118,6 +104,32 @@ namespace SteamAPI.Controllers
             return NoContent();
         }
 
+        // POST: api/companies/1/countries
+        [HttpPost("{id}/countries")]
+        public async Task<ActionResult> PostCompanyCountries(int id, int countryId)
+        {
+            if (!await _steamRepo.CompanyExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var company = await _steamRepo.GetContext().Companies.AsTracking().FirstOrDefaultAsync(c => c.CompanyId == id);
+
+            if (!await _steamRepo.CountryExistsAsync(countryId))
+            {
+                return NotFound();
+            }
+
+            var country = await _steamRepo.GetContext().Countries.AsTracking().FirstOrDefaultAsync(c => c.CountryId == countryId);
+
+            await _steamRepo.AddCountryToCompany(company, country);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+        #endregion
+
+        #region DELETE
         // DELETE: api/companies/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int id)
@@ -132,5 +144,6 @@ namespace SteamAPI.Controllers
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }
+        #endregion
     }
 }

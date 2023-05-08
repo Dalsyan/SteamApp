@@ -16,9 +16,8 @@ namespace SteamDomain
         public Company Company { get; set; }
 
         public ICollection<Developer> Developers { get; set; } = new List<Developer>();
-
         public ICollection<Server?> Servers { get; set; } = new List<Server?>();
 
-        public ICollection<User?> Users { get; set; } = new List<User?>();
+        public ICollection<User> Users { get; set; } = new List<User>();
     }
 }

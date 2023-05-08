@@ -1,5 +1,6 @@
 ﻿using SteamAPI.Models;
 using SteamData;
+using SteamData.Models;
 using SteamDomain;
 
 namespace SteamAPI.Services
@@ -22,8 +23,10 @@ namespace SteamAPI.Services
         Task<IEnumerable<User?>> GetGameUsersAsync(int gameId);
         Task<IEnumerable<Developer?>> GetGameDevsAsync(int gameId);
         Task<IEnumerable<Server?>> GetGameServersAsync(int gameId);
+        
+        Task AddUserToGame(Game game, User user);
+        Task AddDevToGame(Game game, Developer dev);
 
-        Task Algo(int gameId, int userId);
         #endregion
 
         #region User
@@ -37,6 +40,8 @@ namespace SteamAPI.Services
         Task<User?> GetUserBaseAsync(int userId);
         Task<IEnumerable<Game?>> GetUserGamesAsync(int userId);
         Task<Account> GetUserAccountAsync(int userId);
+
+        Task AddGameToUser(User user, Game game);
         #endregion
 
         #region Account
@@ -63,6 +68,8 @@ namespace SteamAPI.Services
         Task<IEnumerable<Company?>> GetCountryCompaniesAsync(int countryId);
         Task<IEnumerable<Server?>> GetCountryServersAsync(int countryId);
         Task<IEnumerable<Developer?>> GetCountryDevsAsync(int countryId);
+
+        Task AddCompanyToCountry(Country country, Company company);
         #endregion
 
         #region Company
@@ -74,6 +81,8 @@ namespace SteamAPI.Services
 
         Task<IEnumerable<Company>> GetAllCompaniesBaseAsync();
         Task<Company?> GetCompanyBaseAsync(int companyId);
+
+        Task AddCountryToCompany(Company company, Country country);
         #endregion
 
         #region Server
@@ -99,6 +108,8 @@ namespace SteamAPI.Services
 
         Task<IEnumerable<Developer>> GetAllDevsBaseAsync();
         Task<Developer?> GetDevBaseAsync(int devId);
+
+        Task AddGameToDev(Developer dev, Game game);
         #endregion
     }
 }

@@ -6,6 +6,7 @@ using SteamAPI.Models.DeveloperDTOs;
 using SteamAPI.Models.GameDTOs;
 using SteamAPI.Services;
 using SteamData;
+using SteamData.Models;
 using SteamDomain;
 
 namespace SteamAPI.Controllers
@@ -127,6 +128,31 @@ namespace SteamAPI.Controllers
             var finalDeveloper = _mapper.Map<Developer>(developer);
 
             await _steamRepo.AddDeveloperAsync(finalDeveloper);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/devs/1/games
+        [HttpPost("{id}/games")]
+        public async Task<ActionResult> PostDevGame(int id, int gameId)
+        {
+            if (!await _steamRepo.DeveloperExistsAsync(id))
+            {
+                return NotFound();
+            }
+
+            var dev = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == id);
+
+            if (!await _steamRepo.DeveloperExistsAsync(gameId))
+            {
+                return NotFound();
+            }
+
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
+
+
+            await _steamRepo.AddGameToDev(dev, game);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

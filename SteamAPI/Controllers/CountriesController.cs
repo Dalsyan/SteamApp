@@ -138,6 +138,29 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+
+        // POST: api/countries/1/companies
+        [HttpPost("{id}/companies")]
+        public async Task<ActionResult> PostCountryCompanies(int id, int companyId)
+        {
+            if (!await _steamRepo.CountryExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var country = await _steamRepo.GetContext().Countries.AsTracking().FirstOrDefaultAsync(c => c.CountryId == id);
+
+            if (!await _steamRepo.CompanyExistsAsync(companyId))
+            {
+                return NotFound();
+            }
+
+            var company = await _steamRepo.GetContext().Companies.AsTracking().FirstOrDefaultAsync(c => c.CompanyId == companyId);
+
+            await _steamRepo.AddCompanyToCountry(country, company);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
         #endregion
 
         #region DELETE
