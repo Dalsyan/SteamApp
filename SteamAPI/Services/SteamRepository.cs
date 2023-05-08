@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models;
 using SteamAPI.Models.AccountDTOs;
 using SteamData;
+using SteamData.Models;
 using SteamDomain;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -127,6 +128,14 @@ namespace SteamAPI.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Game?>> GetGameUserCountAsync()
+        {
+            var usersCount = await _context.Games
+                .Include(g => g.Users)
+                .OrderByDescending(g => g.Users.Count)
+                .ToArrayAsync();
+            return usersCount;
+        }
         #endregion
 
         #region User
@@ -304,7 +313,7 @@ namespace SteamAPI.Services
         public async Task<IEnumerable<Server?>> GetCountryServersAsync(int countryId)
         {
             var country = await _context.Countries
-                .Include(g => g.Servers)
+                .Include(g => g.Servers).ThenInclude(s => s.Country)
                 .FirstOrDefaultAsync(c => c.CountryId == countryId);
             var servers = country.Servers.ToList();
             return servers;
@@ -331,10 +340,10 @@ namespace SteamAPI.Services
         public async Task<IEnumerable<Company>> GetAllCompaniesAsync()
         {
             return await _context.Companies
-                .Include(c => c.Servers)
                 .Include(c => c.Countries)
                 .Include(c => c.Developers)
                 .Include(c => c.Games)
+                .Include(c => c.Servers).ThenInclude(s => s.Country)
                 .OrderBy(c => c.CompanyId).ToListAsync();
         }
         public async Task<Company?> GetCompanyAsync(int companyId)
@@ -373,6 +382,38 @@ namespace SteamAPI.Services
         {
             return await _context.Companies
                 .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        }
+        public async Task<IEnumerable<Game?>> GetCompanyGamesAsync(int companyId)
+        {
+            var company = await _context.Companies
+                .Include(u => u.Games)
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+            var games = company.Games.ToList();
+            return games;
+        }
+        public async Task<IEnumerable<Server?>> GetCompanyServersAsync(int companyId)
+        {
+            var company = await _context.Companies
+                .Include(c => c.Servers).ThenInclude(s => s.Country)
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+            var servers = company.Servers.ToList();
+            return servers;
+        }
+        public async Task<IEnumerable<Country?>> GetCompanyCountriesAsync(int companyId)
+        {
+            var company = await _context.Companies
+                .Include(c => c.Countries)
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+            var countries = company.Countries.ToList();
+            return countries;
+        }
+        public async Task<IEnumerable<Developer?>> GetCompanyDevsAsync(int companyId)
+        {
+            var company = await _context.Companies
+                .Include(c => c.Developers)
+                .FirstOrDefaultAsync(c => c.CompanyId == companyId);
+            var devs = company.Developers.ToList();
+            return devs;
         }
 
         public async Task AddCountryToCompany(Company company, Country country)

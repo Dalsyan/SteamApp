@@ -150,47 +150,30 @@ namespace SteamAPI.Controllers
         {
             var games = await _steamRepo.GetAllGamesAsync();
             var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
-            IEnumerable<IGrouping<int, GameBaseDTO>> groupGameCompany = gamesDTOs.GroupBy(g => g.CompanyId);
+            var groupGameCompany = gamesDTOs.GroupBy(g => g.CompanyId);
             return Ok(groupGameCompany);
         }
 
         // GET: api/games/groupGender
         [HttpGet("groupGender")]
-        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByGender()
+        public async Task<ActionResult<IEnumerable<IGrouping<string, GameBaseDTO>>>> GetGamesGroupByGender()
         {
             var games = await _steamRepo.GetAllGamesAsync();
             var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
             var groupGameGender = gamesDTOs.GroupBy(g => g.Gender);         // IEnumerable<IGrouping<string, GameBaseDTO>>
             return Ok(groupGameGender);
         }
-        /*
+        
         // GET: api/games/usersCount
         [HttpGet("usersCount")]
         public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByUsersCount()
         {
-            var games = await _steamRepo.Algo();
-            var gamesDTOs = _mapper.Map<IEnumerable<GameDTO>>(games);
-            var groupGameGender = gamesDTOs.OrderBy(g => g.Users.Count).GroupBy(g => g.Users.Count);         // IEnumerable<IGrouping<string, GameBaseDTO>>
-            return Ok(groupGameGender);
+            var games = await _steamRepo.GetGameUserCountAsync();
+            var gamesDTOs = _mapper.Map<IEnumerable<GameUsersDTO>>(games);
+            var groupGameUserCount = gamesDTOs.GroupBy(g => g.Users.Count);         // IEnumerable<IGrouping<string, GameBaseDTO>>
+            return Ok(groupGameUserCount);
         }
         
-        // GET: api/games/join
-        [HttpGet("join")]
-        public async Task<ActionResult<IEnumerable<CountryBaseDTO>>> GetGamesJoinCompanies()
-        {
-            var accounts = await _steamRepo.GetAllAccountsAsync();
-            var countries = await _steamRepo.GetAllCountriesAsync();
-
-            var gameC = countries           // source
-                .Join(accounts,             // target
-                    c => c.CountryId,       // FK
-                    a => a.CountryId,       // PK
-                    (c, a) => new { Country = c, Account = a })    // project result
-                .Select(x => x.Country);    // select result
-
-            return Ok(_mapper.Map<IEnumerable<CountryBaseDTO>>(gameC));
-        }
-        */
         #endregion
 
         #region PUT
@@ -228,7 +211,7 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
-                
+ 
         // POST: api/games/1/users
         [HttpPost("{id}/users")]
         public async Task<ActionResult> PostGameUser(int id, int userId)
@@ -237,6 +220,7 @@ namespace SteamAPI.Controllers
             {
                 return NotFound();
             }
+
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
 
             if (!await _steamRepo.UserExistsAsync(userId))

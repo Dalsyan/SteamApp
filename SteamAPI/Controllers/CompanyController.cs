@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models.CompanyDTOs;
+using SteamAPI.Models.CountryDTOs;
+using SteamAPI.Models.DeveloperDTOs;
 using SteamAPI.Models.GameDTOs;
+using SteamAPI.Models.ServerDTOs;
 using SteamAPI.Services;
 using SteamData;
 using SteamDomain;
@@ -64,6 +67,36 @@ namespace SteamAPI.Controllers
             }
 
             return Ok(_mapper.Map<CompanyBaseDTO>(Company));
+        }
+
+        // GET: api/companies/5/games
+        [HttpGet("{id}/games")]
+        public async Task<ActionResult<GameBaseDTO>> GetCompanyGames(int id)
+        {
+            var games = await _steamRepo.GetCompanyGamesAsync(id);
+            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games));
+        }
+
+        // GET: api/companies/5/servers
+        [HttpGet("{id}/servers")]
+        public async Task<ActionResult<ServerBaseDTO>> GetCompanyServers(int id)
+        {
+            var servers = await _steamRepo.GetCompanyServersAsync(id);
+            return Ok(_mapper.Map<IEnumerable<ServerBaseDTO>>(servers));
+        }
+        // GET: api/companies/5/countries
+        [HttpGet("{id}/countries")]
+        public async Task<ActionResult<CountryBaseDTO>> GetCompanyCountries(int id)
+        {
+            var countries = await _steamRepo.GetCompanyCountriesAsync(id);
+            return Ok(_mapper.Map<IEnumerable<CountryBaseDTO>>(countries));
+        }
+        // GET: api/companies/5/devs
+        [HttpGet("{id}/devs")]
+        public async Task<ActionResult<DeveloperBaseDTO>> GetCompanyDevs(int id)
+        {
+            var devs = await _steamRepo.GetCompanyDevsAsync(id);
+            return Ok(_mapper.Map<IEnumerable<DeveloperBaseDTO>>(devs));
         }
         #endregion
 

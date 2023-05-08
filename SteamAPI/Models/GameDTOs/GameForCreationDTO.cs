@@ -12,8 +12,8 @@ namespace SteamAPI.Models.GameDTOs
         public string? Gender { get; set; }
         public int CompanyId { get; set; }
         // public CompanyBaseDTO Company { get; set; }
-        public ICollection<UserBaseDTO?> Users { get; set; } = new List<UserBaseDTO?>();
-        public ICollection<DeveloperBaseDTO> Developers { get; set; } = new List<DeveloperBaseDTO>();
+        // public ICollection<UserBaseDTO?> Users { get; set; } = new List<UserBaseDTO?>();
+        public ICollection<DeveloperForCreationDTO> Developers { get; set; } = new List<DeveloperForCreationDTO>();
         public ICollection<ServerForCreationDTO?> Servers { get; set; } = new List<ServerForCreationDTO?>();
     }
 }

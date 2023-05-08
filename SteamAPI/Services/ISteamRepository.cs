@@ -27,6 +27,7 @@ namespace SteamAPI.Services
         Task AddUserToGame(Game game, User user);
         Task AddDevToGame(Game game, Developer dev);
 
+        Task<IEnumerable<Game?>> GetGameUserCountAsync();
         #endregion
 
         #region User
@@ -81,6 +82,10 @@ namespace SteamAPI.Services
 
         Task<IEnumerable<Company>> GetAllCompaniesBaseAsync();
         Task<Company?> GetCompanyBaseAsync(int companyId);
+        Task<IEnumerable<Game?>> GetCompanyGamesAsync(int companyId);
+        Task<IEnumerable<Server?>> GetCompanyServersAsync(int companyId);
+        Task<IEnumerable<Country?>> GetCompanyCountriesAsync(int companyId);
+        Task<IEnumerable<Developer?>> GetCompanyDevsAsync(int companyId);
 
         Task AddCountryToCompany(Company company, Country country);
         #endregion

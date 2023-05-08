@@ -13,7 +13,7 @@ namespace SteamAPI.Profiles
             CreateMap<GameForUpdateDTO, Game>();
             CreateMap<Game, GameBaseDTO>();
             CreateMap<GameBaseDTO, Game>();
-            // CreateMap<IGrouping<int, Game>, IGrouping<int, GameBaseDTO>>();
+            CreateMap<Game, GameUsersDTO>();
         }
     }
 }
