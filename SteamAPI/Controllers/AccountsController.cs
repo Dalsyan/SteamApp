@@ -65,6 +65,18 @@ namespace SteamAPI.Controllers
 
             return Ok(_mapper.Map<AccountBaseDTO>(account));
         }
+
+        public async Task<ActionResult> GetAccountJoinCountry()
+        {
+            var accounts = await _steamRepo.GetAllAccountsAsync();
+            var countries = await _steamRepo.GetAllCountriesAsync();
+
+            var res = accounts.Join(accounts,
+                c => c = countries.CountryId
+                );
+
+            return Ok();
+        }
         #endregion
 
         #region PUT

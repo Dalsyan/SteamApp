@@ -170,10 +170,9 @@ namespace SteamAPI.Controllers
         {
             var games = await _steamRepo.GetGameUserCountAsync();
             var gamesDTOs = _mapper.Map<IEnumerable<GameUsersDTO>>(games);
-            var groupGameUserCount = gamesDTOs.GroupBy(g => g.Users.Count);         // IEnumerable<IGrouping<string, GameBaseDTO>>
+            var groupGameUserCount = gamesDTOs.GroupBy(g => g.Users.Count);         
             return Ok(groupGameUserCount);
         }
-        
         #endregion
 
         #region PUT
