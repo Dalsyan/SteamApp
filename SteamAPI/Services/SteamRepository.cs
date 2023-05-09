@@ -127,15 +127,6 @@ namespace SteamAPI.Services
 
             await _context.SaveChangesAsync();
         }
-
-        public async Task<IEnumerable<Game?>> GetGameUserCountAsync()
-        {
-            var usersCount = await _context.Games
-                .Include(g => g.Users)
-                .OrderByDescending(g => g.Users.Count)
-                .ToArrayAsync();
-            return usersCount;
-        }
         #endregion
 
         #region User

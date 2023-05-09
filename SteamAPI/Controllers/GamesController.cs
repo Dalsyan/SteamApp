@@ -51,7 +51,7 @@ namespace SteamAPI.Controllers
         public async Task<ActionResult<GameDTO>> GetGame(int id)
         {
             var game = await _steamRepo.GetGameAsync(id);
-            if (game == null) 
+            if (game == null)
             {
                 return NotFound();
             }
@@ -163,15 +163,34 @@ namespace SteamAPI.Controllers
             var groupGameGender = gamesDTOs.GroupBy(g => g.Gender);         // IEnumerable<IGrouping<string, GameBaseDTO>>
             return Ok(groupGameGender);
         }
-        
+
         // GET: api/games/usersCount
         [HttpGet("usersCount")]
         public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByUsersCount()
         {
-            var games = await _steamRepo.GetGameUserCountAsync();
-            var gamesDTOs = _mapper.Map<IEnumerable<GameUsersDTO>>(games);
-            var groupGameUserCount = gamesDTOs.GroupBy(g => g.Users.Count);         
-            return Ok(groupGameUserCount);
+            var games = await _steamRepo.GetAllGamesAsync();
+            var users = await _steamRepo.GetAllUsersAsync();
+
+            // Group Join
+            var gamesGJ = games
+                .Select(g => new
+                {
+                    Id = g.GameId,
+                    uCount = g.Users.Count()
+                })
+                .OrderByDescending(r => r.uCount);
+
+            // Inner Join
+            var flatGames = games.SelectMany(g => g.Users,
+                (g, users) => new
+                {
+                    GameId = g.GameId,
+                    UserId = users.UserId
+                })
+                .OrderBy(r => r.GameId)
+                .GroupBy(r => r.GameId);
+
+            return Ok(gamesGJ);
         }
         #endregion
 
@@ -188,7 +207,7 @@ namespace SteamAPI.Controllers
             }
 
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
-           
+
             _mapper.Map(gameDTO, game);
             await _steamRepo.SaveChangesAsync();
 
@@ -210,7 +229,7 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
- 
+
         // POST: api/games/1/users
         [HttpPost("{id}/users")]
         public async Task<ActionResult> PostGameUser(int id, int userId)

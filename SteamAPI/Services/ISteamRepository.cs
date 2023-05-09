@@ -26,8 +26,6 @@ namespace SteamAPI.Services
         
         Task AddUserToGame(Game game, User user);
         Task AddDevToGame(Game game, Developer dev);
-
-        Task<IEnumerable<Game?>> GetGameUserCountAsync();
         #endregion
 
         #region User

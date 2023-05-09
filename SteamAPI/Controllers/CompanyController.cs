@@ -98,6 +98,36 @@ namespace SteamAPI.Controllers
             var devs = await _steamRepo.GetCompanyDevsAsync(id);
             return Ok(_mapper.Map<IEnumerable<DeveloperBaseDTO>>(devs));
         }
+
+        // GET: api/companies/join
+        [HttpGet("join")]
+        public async Task<ActionResult> GetCompaniesJoin()
+        {
+            var companies = await _steamRepo.GetAllCompaniesAsync();
+            var games = await _steamRepo.GetAllGamesAsync();
+
+            var res = companies.GroupJoin(
+                games,
+                g => g.CompanyId,
+                c => c.CompanyId,
+                (g, gGroup) => new
+                {
+                    CompanyId = g.CompanyId,
+                    CompanyGames = gGroup.Count()
+                })
+                .OrderByDescending(r => r.CompanyGames);
+
+            foreach (var r in res)
+            {
+                Console.WriteLine("CompanyId: {0} "
+                                + "CompanyGames: {1} ",
+                r.CompanyId,
+                r.CompanyGames
+                );
+            }
+
+            return Ok(res);
+        }
         #endregion
 
         #region PUT

@@ -66,14 +66,68 @@ namespace SteamAPI.Controllers
             return Ok(_mapper.Map<AccountBaseDTO>(account));
         }
 
+        // GET: api/accounts/accJoin
+        [HttpGet("accJoin")]
         public async Task<ActionResult> GetAccountJoinCountry()
         {
             var accounts = await _steamRepo.GetAllAccountsAsync();
             var countries = await _steamRepo.GetAllCountriesAsync();
 
-            var res = accounts.Join(accounts,
-                c => c = countries.CountryId
-                );
+            var res = 
+                accounts.Join(
+                    countries,
+                    c => c.CountryId,
+                    a => a.CountryId,
+                    (a, c) => new
+                    {
+                        AccounId = a.EmailId,
+                        CountryId = c.CountryId
+                    })
+                .GroupBy(r => r.CountryId);
+
+            foreach(var grupo in res)
+            {
+                foreach (var acc_pais in grupo)
+                {
+                    Console.WriteLine("EmailId: {0} "
+                                    + "CountryId: {1} ",
+                        acc_pais.AccounId,
+                        acc_pais.CountryId);
+                }
+            }                
+
+            return Ok();
+        }
+
+        // GET: api/accounts/accJoin2
+        [HttpGet("accJoin2")]
+        public async Task<ActionResult> GetAccountJoinCountry2()
+        {
+            var accounts = await _steamRepo.GetAllAccountsAsync();
+            var countries = await _steamRepo.GetAllCountriesAsync();
+
+            var res =
+                countries.GroupJoin(
+                    accounts,
+                    a => a.CountryId,
+                    c => c.CountryId,
+                    (a, aGroup) => new
+                    {
+                        CountryId = a.CountryId,
+                        AccountCount = aGroup.Count()
+                    })
+                .OrderByDescending(r => r.AccountCount);
+
+            foreach (var acc_pais in res)
+            {
+                if (acc_pais.AccountCount != 0)
+                {
+                    Console.WriteLine("CountryId: {0} "
+                                    + "AccountCount: {1} ",
+                        acc_pais.CountryId,
+                        acc_pais.AccountCount);
+                }
+            }
 
             return Ok();
         }
