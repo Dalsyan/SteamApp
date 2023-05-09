@@ -26,6 +26,10 @@ namespace SteamAPI.Services
         
         Task AddUserToGame(Game game, User user);
         Task AddDevToGame(Game game, Developer dev);
+
+        Task<IEnumerable<Game?>> GameLike(string name);
+
+        Task AddGamesAsync(Game[] games);
         #endregion
 
         #region User

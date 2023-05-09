@@ -166,7 +166,7 @@ namespace SteamAPI.Controllers
 
         // GET: api/games/usersCount
         [HttpGet("usersCount")]
-        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByUsersCount()
+        public async Task<ActionResult> GetGamesGroupByUsersCount()
         {
             var games = await _steamRepo.GetAllGamesAsync();
             var users = await _steamRepo.GetAllUsersAsync();
@@ -176,8 +176,10 @@ namespace SteamAPI.Controllers
                 .Select(g => new
                 {
                     Id = g.GameId,
+                    Title = g.Title,
                     uCount = g.Users.Count()
                 })
+                // .Where(r => r.uCount != 0)
                 .OrderByDescending(r => r.uCount);
 
             // Inner Join
@@ -187,10 +189,35 @@ namespace SteamAPI.Controllers
                     GameId = g.GameId,
                     UserId = users.UserId
                 })
-                .OrderBy(r => r.GameId)
+                .OrderByDescending(r => r.GameId)
                 .GroupBy(r => r.GameId);
 
+            var flatGames2 = games.SelectMany(g => g.Users,
+               (g, users) => new
+               {
+                   GameId = g.GameId,
+                   UserId = users.UserId
+               })
+                .Join(users, x => x.UserId, x => x.UserId, (x, y) => new { x.GameId, y.UserId, y.Nickname })
+                .ToList();
+
+
+
             return Ok(gamesGJ);
+        }
+
+        // GET: api/games/Like
+        [HttpGet("gamesLike")]
+        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetGamesLike(string name)
+        {
+            var games = await _steamRepo.GameLike(name);
+
+            if (games == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games).GroupBy(r => r.CompanyId));
         }
         #endregion
 
@@ -272,6 +299,23 @@ namespace SteamAPI.Controllers
             var dev = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == devId);
 
             await _steamRepo.AddDevToGame(game, dev);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/games/multi
+        [HttpPost("multi")]
+        public async Task<ActionResult> PostGames(GameForCreationDTO[] games)
+        {
+            Game[] fGames = new Game[games.Length];
+
+            for (int i = 0; i < fGames.Length; i++)
+            {
+                fGames[i] = _mapper.Map<Game>(games[i]);
+            }
+
+            await _steamRepo.AddGamesAsync(fGames);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

@@ -12,6 +12,7 @@ namespace SteamAPI.Services
     public class SteamRepository : ISteamRepository
     {
         SteamContext _context;
+
         #region Constructors
         public SteamRepository(SteamContext context)
         {
@@ -111,7 +112,7 @@ namespace SteamAPI.Services
                 .FirstOrDefaultAsync(g => g.GameId == gameId);
             var servers = game.Servers.ToList();
             return servers;
-        }        
+        }
 
         public async Task AddUserToGame(Game game, User user)
         {
@@ -126,6 +127,37 @@ namespace SteamAPI.Services
             dev.Games.Add(game);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Game?>> GameLike(string name)
+        {
+            return await _context.Games
+                .Where(g => g.Title.Contains(name))
+                .ToListAsync();
+        }
+
+        public async Task AddGamesAsync(Game[] games)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                foreach (var g in games)
+                {
+                    _context.Games.Add(g);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CreateSavepointAsync("savepoint1");
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackToSavepointAsync("savepoint1");
+
+                // handle exception
+            }
         }
         #endregion
 

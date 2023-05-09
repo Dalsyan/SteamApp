@@ -115,16 +115,30 @@ namespace SteamAPI.Controllers
                     CompanyId = g.CompanyId,
                     CompanyGames = gGroup.Count()
                 })
+                // .Where(r => r.CompanyGames != 0)
                 .OrderByDescending(r => r.CompanyGames);
 
-            foreach (var r in res)
-            {
-                Console.WriteLine("CompanyId: {0} "
-                                + "CompanyGames: {1} ",
-                r.CompanyId,
-                r.CompanyGames
-                );
-            }
+            return Ok(res);
+        }
+
+        // GET: api/companies/join
+        [HttpGet("join2")]
+        public async Task<ActionResult> GetCompaniesInnerJoin()
+        {
+            var companies = await _steamRepo.GetAllCompaniesAsync();
+            var games = await _steamRepo.GetAllGamesAsync();
+
+            var res = companies.Join(
+                games,
+                c => c.CompanyId,
+                g => g.CompanyId,
+                (c, g) => new
+                {
+                    CompanyId = c.CompanyId,
+                    CompanyName = c.CompanyName,
+                    GameId = g.GameId,
+                    Title = g.Title
+                });
 
             return Ok(res);
         }
