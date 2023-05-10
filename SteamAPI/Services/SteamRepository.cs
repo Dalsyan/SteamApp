@@ -61,16 +61,49 @@ namespace SteamAPI.Services
         }
         public async Task AddGameAsync(Game game)
         {
-            if (!GameExistsAsync(game.GameId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            var games = await _context.Games.ToListAsync();
+
+            try
             {
                 _context.Games.Add(game);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         public async Task DeleteGameAsync(Game game)
         {
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var servers = game.Servers;
+
+                _context.Games.Remove(game);
+
+                await transaction.CreateSavepointAsync("game");
+
+                foreach (var s in servers)
+                {
+                    _context.Servers.Remove(s);
+                }
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackToSavepointAsync("game");
+                await transaction.CommitAsync();
+            }
+
         }
 
         public async Task<IEnumerable<Game>> GetAllGamesBaseAsync()
@@ -116,17 +149,41 @@ namespace SteamAPI.Services
 
         public async Task AddUserToGame(Game game, User user)
         {
-            game.Users.Add(user);
-            user.Games.Add(game);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                game.Users.Add(user);
+                user.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
+
         }
         public async Task AddDevToGame(Game game, Developer dev)
         {
-            game.Developers.Add(dev);
-            dev.Games.Add(game);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                game.Developers.Add(dev);
+                dev.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Game?>> GameLike(string name)
@@ -134,30 +191,6 @@ namespace SteamAPI.Services
             return await _context.Games
                 .Where(g => g.Title.Contains(name))
                 .ToListAsync();
-        }
-
-        public async Task AddGamesAsync(Game[] games)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                foreach (var g in games)
-                {
-                    _context.Games.Add(g);
-                    await _context.SaveChangesAsync();
-
-                    await transaction.CreateSavepointAsync("savepoint1");
-                }
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackToSavepointAsync("savepoint1");
-
-                // handle exception
-            }
         }
         #endregion
 
@@ -183,8 +216,21 @@ namespace SteamAPI.Services
 
         public async Task DeleteUserAsync(User user)
         {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Users.Remove(user);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
         }
 
         public async Task<IEnumerable<User>> GetAllUsersBaseAsync()
@@ -216,10 +262,21 @@ namespace SteamAPI.Services
 
         public async Task AddGameToUser(User user, Game game)
         {
-            game.Users.Add(user);
-            user.Games.Add(game);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                game.Users.Add(user);
+                user.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         #endregion
 
@@ -244,18 +301,39 @@ namespace SteamAPI.Services
         }
         public async Task AddAccountAsync(Account account)
         {
-            if (!AccountExistsAsync(account.EmailId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
                 _context.Accounts.Add(account);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
         }
         public async Task DeleteAccountAsync(Account account)
         {
-            var user = account.User;
-            _context.Users.Remove(user);
-            _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var user = account.User;
+                _context.Users.Remove(user);
+                _context.Accounts.Remove(account);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Account>> GetAllAccountsBaseAsync()
@@ -295,16 +373,35 @@ namespace SteamAPI.Services
         }
         public async Task AddCountryAsync(Country country)
         {
-            if (!CountryExistsAsync(country.CountryId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
                 _context.Countries.Add(country);
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
         }
         public async Task DeleteCountryAsync(Country country)
         {
-            _context.Countries.Remove(country);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Countries.Remove(country);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Country>> GetAllCountriesBaseAsync()
@@ -352,10 +449,22 @@ namespace SteamAPI.Services
 
         public async Task AddCompanyToCountry(Country country, Company company)
         {
-            country.Companies.Add(company);
-            company.Countries.Add(country);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                country.Companies.Add(company);
+                company.Countries.Add(country);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
         }
         #endregion
 
@@ -384,16 +493,36 @@ namespace SteamAPI.Services
         }
         public async Task AddCompanyAsync(Company company)
         {
-            if (!CountryExistsAsync(company.CompanyId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
                 _context.Companies.Add(company);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         public async Task DeleteCompanyAsync(Company company)
         {
-            _context.Companies.Remove(company);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Companies.Remove(company);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Company>> GetAllCompaniesBaseAsync()
@@ -441,10 +570,22 @@ namespace SteamAPI.Services
 
         public async Task AddCountryToCompany(Company company, Country country)
         {
-            country.Companies.Add(company);
-            company.Countries.Add(country);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                country.Companies.Add(company);
+                company.Countries.Add(country);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
         }
         #endregion
 
@@ -471,11 +612,19 @@ namespace SteamAPI.Services
         }
         public async Task AddServerAsync(Server server)
         {
-            if (!ServerExistsAsync(server.ServerId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            
+            try
             {
                 _context.Servers.Add(server);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         public async Task DeleteServerAsync(Server server)
         {

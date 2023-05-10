@@ -303,23 +303,6 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
-
-        // POST: api/games/multi
-        [HttpPost("multi")]
-        public async Task<ActionResult> PostGames(GameForCreationDTO[] games)
-        {
-            Game[] fGames = new Game[games.Length];
-
-            for (int i = 0; i < fGames.Length; i++)
-            {
-                fGames[i] = _mapper.Map<Game>(games[i]);
-            }
-
-            await _steamRepo.AddGamesAsync(fGames);
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
         #endregion
 
         #region DELETE
