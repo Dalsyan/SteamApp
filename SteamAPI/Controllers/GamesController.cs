@@ -11,6 +11,7 @@ using SteamAPI.Models.UserDTOs;
 using SteamAPI.Services;
 using SteamData.Models;
 using SteamDomain;
+using System.Xml.Linq;
 
 namespace SteamAPI.Controllers
 {
@@ -156,12 +157,21 @@ namespace SteamAPI.Controllers
 
         // GET: api/games/groupGender
         [HttpGet("groupGender")]
-        public async Task<ActionResult<IEnumerable<IGrouping<string, GameBaseDTO>>>> GetGamesGroupByGender()
+        public async Task<ActionResult<IEnumerable<IGrouping<string, GameBaseDTO>>>> GetGamesGroupByGenre()
         {
             var games = await _steamRepo.GetAllGamesAsync();
-            var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
-            var groupGameGender = gamesDTOs.GroupBy(g => g.Gender);         // IEnumerable<IGrouping<string, GameBaseDTO>>
-            return Ok(groupGameGender);
+            var genres = await _steamRepo.GetAllGenresAsync();
+
+            var flatGames2 = games.SelectMany(g => g.Genres,
+               (g, genres) => new
+               {
+                   GameId = g.GameId,
+                   GenreId = genres.GenreId
+               })
+                .Join(genres, x => x.GenreId, x => x.GenreId, (x, y) => new { x.GameId, y.GenreId, y.GenreName })
+                .ToList();
+
+            return Ok(flatGames2);
         }
 
         // GET: api/games/usersCount
@@ -183,14 +193,14 @@ namespace SteamAPI.Controllers
                 .OrderByDescending(r => r.uCount);
 
             // Inner Join
-            var flatGames = games.SelectMany(g => g.Users,
-                (g, users) => new
-                {
-                    GameId = g.GameId,
-                    UserId = users.UserId
-                })
-                .OrderByDescending(r => r.GameId)
-                .GroupBy(r => r.GameId);
+            //var flatGames = games.SelectMany(g => g.Users,
+            //    (g, users) => new
+            //    {
+            //        GameId = g.GameId,
+            //        UserId = users.UserId
+            //    })
+            //    .OrderByDescending(r => r.GameId)
+            //    .GroupBy(r => r.GameId);
 
             var flatGames2 = games.SelectMany(g => g.Users,
                (g, users) => new
@@ -201,9 +211,7 @@ namespace SteamAPI.Controllers
                 .Join(users, x => x.UserId, x => x.UserId, (x, y) => new { x.GameId, y.UserId, y.Nickname })
                 .ToList();
 
-
-
-            return Ok(gamesGJ);
+            return Ok(flatGames2);
         }
 
         // GET: api/games/Like
@@ -249,15 +257,23 @@ namespace SteamAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostGame(GameForCreationDTO game)
         {
-            var finalGame = _mapper.Map<Game>(game);
+            var fGame = _mapper.Map<Game>(game);
 
-            await _steamRepo.AddGameAsync(finalGame);
+            foreach (var dev in fGame.Developers)
+            {
+                if (dev.CompanyId != fGame.CompanyId)
+                {
+                    return BadRequest("Los Desarrolladores han de ser de la compañía del nuevo juego.");
+                }
+            }
+ 
+            await _steamRepo.AddGameAsync(fGame);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // POST: api/games/1/users
+        // POST: api/games/5/users
         [HttpPost("{id}/users")]
         public async Task<ActionResult> PostGameUser(int id, int userId)
         {
@@ -281,7 +297,7 @@ namespace SteamAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/games/1/devs
+        // POST: api/games/5/devs
         [HttpPost("{id}/devs")]
         public async Task<ActionResult> PostGameDev(int id, int devId)
         {
@@ -298,7 +314,34 @@ namespace SteamAPI.Controllers
 
             var dev = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == devId);
 
+            if (game.CompanyId != dev.CompanyId) {
+                return BadRequest("El desarrollador ha de ser de la compañía del juego.");
+            }
+
             await _steamRepo.AddDevToGame(game, dev);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/games/5/genres
+        [HttpPost("{id}/genres")]
+        public async Task<ActionResult> PostGameGenre(int id, int genreId)
+        {
+            if (!await _steamRepo.GameExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == id);
+
+            if (!await _steamRepo.GenreExistsAsync(genreId))
+            {
+                return NotFound();
+            }
+
+            var genre = await _steamRepo.GetContext().Genres.AsTracking().FirstOrDefaultAsync(g => g.GenreId == genreId);
+
+            await _steamRepo.AddGenreToGame(game, genre);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

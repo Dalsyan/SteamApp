@@ -12,6 +12,7 @@ namespace SteamData
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Developer> Devs { get; set; }
         public DbSet<Server> Servers { get; set; }
+        public DbSet<Genre> Genres { get; set; }
 
         public SteamContext()
         {
@@ -44,10 +45,10 @@ namespace SteamData
             };
             var gameList = new Game[]
             {
-                new Game { GameId = 1, Title = "League of Legends", Gender = "MOBA", CompanyId = 1},
-                new Game { GameId = 2, Title = "Fortnite", Gender = "Shooter", CompanyId = 4},
-                new Game { GameId = 3, Title = "Call of Cthulhu", Gender = "Rol", CompanyId = 5},
-                new Game { GameId = 4, Title = "Stardew Valley", Gender = "Simulator", CompanyId = 2},
+                new Game { GameId = 1, Title = "League of Legends", CompanyId = 1 },
+                new Game { GameId = 2, Title = "Fortnite", CompanyId = 4},
+                new Game { GameId = 3, Title = "Call of Cthulhu", CompanyId = 5},
+                new Game { GameId = 4, Title = "Stardew Valley", CompanyId = 2},
             };
             var countryList = new Country[]
             {
@@ -80,6 +81,13 @@ namespace SteamData
                 new Server { ServerId = 3, ServerName = "Epic 1", GameId = 2, CompanyId = 4, CountryId = 4 },
                 new Server { ServerId = 4, ServerName = "Stardew 1", GameId = 4, CompanyId = 2, CountryId = 4 },
             };
+            var genreList = new Genre[]
+            {
+                new Genre { GenreId = 1, GenreName = "MOBA" },
+                new Genre { GenreId = 2, GenreName = "Shooter" },
+                new Genre { GenreId = 3, GenreName = "RPG" },
+                new Genre { GenreId = 4, GenreName = "Simulator" }
+            };
 
             modelBuilder.Entity<User>().HasData(userList);
             modelBuilder.Entity<User>().HasIndex(u => u.Nickname).IsUnique();
@@ -97,9 +105,11 @@ namespace SteamData
             modelBuilder.Entity<Account>().HasIndex(a => a.Email).IsUnique();
 
             modelBuilder.Entity<Developer>().HasData(devList);
-                        
+
             modelBuilder.Entity<Server>().HasData(serverList);
             modelBuilder.Entity<Server>().HasIndex(s => s.ServerName).IsUnique();
+
+            modelBuilder.Entity<Genre>().HasData(genreList);
         }
     }
 }

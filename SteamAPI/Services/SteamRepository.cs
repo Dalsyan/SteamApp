@@ -40,6 +40,7 @@ namespace SteamAPI.Services
         public async Task<IEnumerable<Game>> GetAllGamesAsync()
         {
             return await _context.Games.OrderBy(g => g.GameId)
+                .Include(g => g.Genres)
                 .Include(g => g.Company)
                 .Include(g => g.Users)
                 .Include(g => g.Developers)
@@ -49,6 +50,7 @@ namespace SteamAPI.Services
         public async Task<Game?> GetGameAsync(int gameId)
         {
             return await _context.Games
+                .Include(g => g.Genres)
                 .Include(g => g.Company)
                 .Include(g => g.Users)
                 .Include(g => g.Developers)
@@ -122,6 +124,14 @@ namespace SteamAPI.Services
             var company = await _context.Companies.Where(c => c.CompanyId == game.CompanyId).FirstOrDefaultAsync();
             return company;
         }
+        public async Task<IEnumerable<Genre>> GetGameGenresAsync(int gameId)
+        {
+            var game = await _context.Games
+                .Include(g => g.Genres)
+                .FirstOrDefaultAsync(g => g.GameId == gameId);
+            var genres = game.Genres.ToList();
+            return genres;
+        }
         public async Task<IEnumerable<User?>> GetGameUsersAsync(int gameId)
         {
             var game = await _context.Games
@@ -185,6 +195,24 @@ namespace SteamAPI.Services
                 await transaction.RollbackAsync();
             }
         }
+        public async Task AddGenreToGame(Game game, Genre genre)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                game.Genres.Add(genre);
+                genre.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
 
         public async Task<IEnumerable<Game?>> GameLike(string name)
         {
@@ -193,6 +221,106 @@ namespace SteamAPI.Services
                 .ToListAsync();
         }
         #endregion
+
+        #region Genre
+        public async Task<IEnumerable<Genre>> GetAllGenresAsync()
+        {
+            return await _context.Genres.OrderBy(g => g.GenreId)
+                .Include(g => g.Games)
+                .ToListAsync();
+        }
+        public async Task<Genre?> GetGenreAsync(int genreId)
+        {
+            return await _context.Genres
+                .Include(g => g.Games)
+                .FirstOrDefaultAsync(g => g.GenreId == genreId);
+        }
+        public async Task<bool> GenreExistsAsync(int genreId)
+        {
+            return await _context.Genres.AnyAsync(g => g.GenreId == genreId);
+        }
+        public async Task AddGenreAsync(Genre genre)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            var genres = await _context.Genres.ToListAsync();
+
+            try
+            {
+                _context.Genres.Add(genre);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
+        public async Task DeleteGenreAsync(Genre genre)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Genres.Remove(genre);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.CommitAsync();
+            }
+
+        }
+
+        public async Task<IEnumerable<Genre>> GetAllGenresBaseAsync()
+        {
+            return await _context.Genres.OrderBy(g => g.GenreId)
+                .ToListAsync();
+        }
+        public async Task<Genre?> GetGenreBaseAsync(int genreId)
+        {
+            return await _context.Genres
+                .FirstOrDefaultAsync(g => g.GenreId == genreId);
+        }
+        public async Task<IEnumerable<Game?>> GetGenreGamesAsync(int genreId)
+        {
+            var genre = await _context.Genres
+                .Include(g => g.Games)
+                .FirstOrDefaultAsync(g => g.GenreId == genreId);
+            var games = genre.Games.ToList();
+            return games;
+        }
+
+        public async Task AddGameToGenre(Genre genre, Game game)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                game.Genres.Add(genre);
+                genre.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Genre?>> GenreLike(string name)
+        {
+            return await _context.Genres
+                .Where(g => g.GenreName.Contains(name))
+                .ToListAsync();
+        }
+        #endregion 
 
         #region User
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -628,8 +756,19 @@ namespace SteamAPI.Services
         }
         public async Task DeleteServerAsync(Server server)
         {
-            _context.Servers.Remove(server);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Servers.Remove(server);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Server>> GetAllServersBaseAsync()
@@ -688,16 +827,36 @@ namespace SteamAPI.Services
         }
         public async Task AddDeveloperAsync(Developer dev)
         {
-            if (!DeveloperExistsAsync(dev.DevId).Result)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
             {
                 _context.Devs.Add(dev);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         public async Task DeleteDeveloperAsync(Developer dev)
         {
-            _context.Devs.Remove(dev);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                _context.Devs.Remove(dev);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
 
         public async Task<IEnumerable<Developer>> GetAllDevsBaseAsync()
@@ -713,10 +872,21 @@ namespace SteamAPI.Services
 
         public async Task AddGameToDev(Developer dev, Game game)
         {
-            game.Developers.Add(dev);
-            dev.Games.Add(game);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                game.Developers.Add(dev);
+                dev.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
         }
         #endregion
     }

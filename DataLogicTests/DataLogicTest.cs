@@ -55,7 +55,7 @@ namespace DataLogicTests
 
             using (var context = new SteamContext(builder.Options))
             {
-                var game = new Game { Title = "test", Gender = "gTest" };
+                var game = new Game { Title = "test" };
                 Debug.WriteLine($"gamesCount: {context.Games.Count()}");
                 context.Games.Add(game);
                 context.SaveChanges();
@@ -74,7 +74,7 @@ namespace DataLogicTests
 
             using (var context = new SteamContext(builder.Options))
             {
-                var gameDTO = new GameDTO { GameId = 1, Title = "test", Gender = "gTest" };
+                var gameDTO = new GameDTO { GameId = 1, Title = "test" };
                 Debug.WriteLine($"gameDTO: {gameDTO.GameId}");
                 Debug.WriteLine($"gameDTO: {gameDTO.Title}");
 
@@ -122,7 +122,7 @@ namespace DataLogicTests
         {
             using (var seedcontext = new SteamContext(options))
             {
-                var game = new Game { Title = "Dead Island", Gender = "Survival" };
+                var game = new Game { Title = "Dead Island" };
                 seedcontext.Games.Add(game);
                 seedcontext.SaveChanges();
                 return game.GameId;
@@ -135,10 +135,10 @@ namespace DataLogicTests
             {
                 var gameList = new List<Game>()
                 {
-                    new Game { Title = "Dead Island", Gender = "Survival" },
-                    new Game { Title = "Dead Island 2", Gender = "Survival" },
-                    new Game { Title = "Dead Island Riptide", Gender = "Survival" },
-                    new Game { Title = "Dead Island 3", Gender = "Survival" }
+                    new Game { Title = "Dead Island" },
+                    new Game { Title = "Dead Island 2" },
+                    new Game { Title = "Dead Island Riptide" },
+                    new Game { Title = "Dead Island 3" }
                 };
                 foreach (var game in gameList)
                 {

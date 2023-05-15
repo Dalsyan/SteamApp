@@ -1,4 +1,5 @@
-﻿using SteamAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SteamAPI.Models;
 using SteamData;
 using SteamData.Models;
 using SteamDomain;
@@ -20,15 +21,33 @@ namespace SteamAPI.Services
         Task<IEnumerable<Game>> GetAllGamesBaseAsync();
         Task<Game?> GetGameBaseAsync(int gameId);
         Task<Company> GetGameCompanyAsync(int gameId);
+        Task<IEnumerable<Genre>> GetGameGenresAsync(int gameId);
         Task<IEnumerable<User?>> GetGameUsersAsync(int gameId);
         Task<IEnumerable<Developer?>> GetGameDevsAsync(int gameId);
         Task<IEnumerable<Server?>> GetGameServersAsync(int gameId);
         
         Task AddUserToGame(Game game, User user);
         Task AddDevToGame(Game game, Developer dev);
+        Task AddGenreToGame(Game game, Genre genre);
 
         Task<IEnumerable<Game?>> GameLike(string name);
         #endregion
+
+        #region Genre
+        Task<IEnumerable<Genre>> GetAllGenresAsync();
+        Task<Genre?> GetGenreAsync(int genreId);
+        Task<bool> GenreExistsAsync(int genreId);
+        Task AddGenreAsync(Genre genre);
+        Task DeleteGenreAsync(Genre genre);
+
+        Task<IEnumerable<Genre>> GetAllGenresBaseAsync();
+        Task<Genre?> GetGenreBaseAsync(int genreId);
+        Task<IEnumerable<Game?>> GetGenreGamesAsync(int genreId);
+
+        Task AddGameToGenre(Genre genre, Game game);
+
+        Task<IEnumerable<Genre?>> GenreLike(string name);
+        #endregion 
 
         #region User
         Task<IEnumerable<User>> GetAllUsersAsync();
