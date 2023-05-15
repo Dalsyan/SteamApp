@@ -29,8 +29,10 @@ namespace SteamAPI.Services
         Task AddUserToGame(Game game, User user);
         Task AddDevToGame(Game game, Developer dev);
         Task AddGenreToGame(Game game, Genre genre);
+        Task AddScoreToGame(Game game, User user, Score score);
 
         Task<IEnumerable<Game?>> GameLike(string name);
+        Task<Score> AddScoreAsync(Score score);
         #endregion
 
         #region Genre

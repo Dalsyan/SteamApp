@@ -13,6 +13,7 @@ namespace SteamData
         public DbSet<Developer> Devs { get; set; }
         public DbSet<Server> Servers { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<Score> Scores { get; set; }
 
         public SteamContext()
         {
@@ -45,10 +46,10 @@ namespace SteamData
             };
             var gameList = new Game[]
             {
-                new Game { GameId = 1, Title = "League of Legends", CompanyId = 1 },
-                new Game { GameId = 2, Title = "Fortnite", CompanyId = 4},
-                new Game { GameId = 3, Title = "Call of Cthulhu", CompanyId = 5},
-                new Game { GameId = 4, Title = "Stardew Valley", CompanyId = 2},
+                new Game { GameId = 1, Title = "League of Legends", CompanyId = 1, HasOnline = true },
+                new Game { GameId = 2, Title = "Fortnite", CompanyId = 4, HasOnline = true },
+                new Game { GameId = 3, Title = "Call of Cthulhu", CompanyId = 5 },
+                new Game { GameId = 4, Title = "Stardew Valley", CompanyId = 2, HasOnline = true },
             };
             var countryList = new Country[]
             {
@@ -60,10 +61,10 @@ namespace SteamData
             };
             var accountList = new Account[]
             {
-                new Account { EmailId = 1, Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01), CountryId = 1, UserId = 1},
-                new Account { EmailId = 2, Email = "tentxten@email.com", Password = "0002", CreationDate = new DateTime(2000, 04, 30), CountryId = 1, UserId = 2 },
+                new Account { EmailId = 1, Email = "dalsyan@email.com", Password = "0001", CreationDate = new DateTime(2000, 10, 01), CountryId = 1, UserId = 1, Premium = true},
+                new Account { EmailId = 2, Email = "tentxten@email.com", Password = "0002", CreationDate = new DateTime(2000, 04, 30), CountryId = 1, UserId = 2, Premium = true },
                 new Account { EmailId = 3, Email = "jamonsioo@email.com", Password = "0003", CreationDate = new DateTime(2000, 08, 25), CountryId = 1, UserId = 3 },
-                new Account { EmailId = 4, Email = "enricdetu@email.com", Password = "0004", CreationDate = new DateTime(2001, 07, 15), CountryId = 1, UserId = 4 },
+                new Account { EmailId = 4, Email = "enricdetu@email.com", Password = "0004", CreationDate = new DateTime(2001, 07, 15), CountryId = 1, UserId = 4, Premium = true },
                 new Account { EmailId = 5, Email = "reisapo@email.com", Password = "0005", CreationDate = new DateTime(2000, 12, 08), CountryId = 1, UserId = 5}
             };
             var devList = new Developer[]

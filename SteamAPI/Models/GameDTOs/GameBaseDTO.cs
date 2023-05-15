@@ -10,5 +10,6 @@ namespace SteamAPI.Models.GameDTOs
         public string Title { get; set; }
         public ICollection<GenreBaseDTO?> Genres { get; set; } = new List<GenreBaseDTO?>();
         public int CompanyId { get; set; }
+        public int Score { get; set; }
     }
 }

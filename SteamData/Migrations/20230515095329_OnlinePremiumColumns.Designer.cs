@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SteamData;
 
@@ -11,9 +12,11 @@ using SteamData;
 namespace SteamData.Migrations
 {
     [DbContext(typeof(SteamContext))]
-    partial class SteamContextModelSnapshot : ModelSnapshot
+    [Migration("20230515095329_OnlinePremiumColumns")]
+    partial class OnlinePremiumColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,21 +70,6 @@ namespace SteamData.Migrations
                     b.ToTable("GameGenre");
                 });
 
-            modelBuilder.Entity("GameScore", b =>
-                {
-                    b.Property<int>("GamesGameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ScoresScoreV")
-                        .HasColumnType("int");
-
-                    b.HasKey("GamesGameId", "ScoresScoreV");
-
-                    b.HasIndex("ScoresScoreV");
-
-                    b.ToTable("GameScore");
-                });
-
             modelBuilder.Entity("GameUser", b =>
                 {
                     b.Property<int>("GamesGameId")
@@ -95,21 +83,6 @@ namespace SteamData.Migrations
                     b.HasIndex("UsersUserId");
 
                     b.ToTable("GameUser");
-                });
-
-            modelBuilder.Entity("ScoreUser", b =>
-                {
-                    b.Property<int>("ScoresScoreV")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ScoresScoreV", "UsersUserId");
-
-                    b.HasIndex("UsersUserId");
-
-                    b.ToTable("ScoreUser");
                 });
 
             modelBuilder.Entity("SteamDomain.Account", b =>
@@ -385,9 +358,6 @@ namespace SteamData.Migrations
                     b.Property<bool>("HasOnline")
                         .HasColumnType("bit");
 
-                    b.Property<float>("Score")
-                        .HasColumnType("real");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -407,7 +377,6 @@ namespace SteamData.Migrations
                             GameId = 1,
                             CompanyId = 1,
                             HasOnline = true,
-                            Score = 0f,
                             Title = "League of Legends"
                         },
                         new
@@ -415,7 +384,6 @@ namespace SteamData.Migrations
                             GameId = 2,
                             CompanyId = 4,
                             HasOnline = true,
-                            Score = 0f,
                             Title = "Fortnite"
                         },
                         new
@@ -423,7 +391,6 @@ namespace SteamData.Migrations
                             GameId = 3,
                             CompanyId = 5,
                             HasOnline = false,
-                            Score = 0f,
                             Title = "Call of Cthulhu"
                         },
                         new
@@ -431,7 +398,6 @@ namespace SteamData.Migrations
                             GameId = 4,
                             CompanyId = 2,
                             HasOnline = true,
-                            Score = 0f,
                             Title = "Stardew Valley"
                         });
                 });
@@ -473,19 +439,6 @@ namespace SteamData.Migrations
                             GenreId = 4,
                             GenreName = "Simulator"
                         });
-                });
-
-            modelBuilder.Entity("SteamDomain.Score", b =>
-                {
-                    b.Property<int>("ScoreV")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScoreV"));
-
-                    b.HasKey("ScoreV");
-
-                    b.ToTable("Scores");
                 });
 
             modelBuilder.Entity("SteamDomain.Server", b =>
@@ -649,41 +602,11 @@ namespace SteamData.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GameScore", b =>
-                {
-                    b.HasOne("SteamDomain.Game", null)
-                        .WithMany()
-                        .HasForeignKey("GamesGameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SteamDomain.Score", null)
-                        .WithMany()
-                        .HasForeignKey("ScoresScoreV")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("GameUser", b =>
                 {
                     b.HasOne("SteamDomain.Game", null)
                         .WithMany()
                         .HasForeignKey("GamesGameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SteamDomain.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ScoreUser", b =>
-                {
-                    b.HasOne("SteamDomain.Score", null)
-                        .WithMany()
-                        .HasForeignKey("ScoresScoreV")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

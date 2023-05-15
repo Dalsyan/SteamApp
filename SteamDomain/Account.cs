@@ -12,6 +12,7 @@ namespace SteamDomain
         [Required]
         public string Password { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
+        public bool Premium { get; set; } = false;
 
         [ForeignKey("Country")]
         public int CountryId { get; set; }

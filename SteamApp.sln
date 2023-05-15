@@ -5,11 +5,9 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAPI", "SteamAPI\SteamAPI.csproj", "{988D8376-6C83-49A8-AE60-50146814CD60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamDomain", "SteamDomain\SteamDomain.csproj", "{92F0ED27-D9D5-4C90-928F-4C36CFF28843}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamDomain", "SteamDomain\SteamDomain.csproj", "{92F0ED27-D9D5-4C90-928F-4C36CFF28843}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamData", "SteamData\SteamData.csproj", "{6523B315-69F3-49E9-86DC-21A7C45425A7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLogicTests", "DataLogicTests\DataLogicTests.csproj", "{51590C91-0403-49E1-AD49-4EF9B0F93ADE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamData", "SteamData\SteamData.csproj", "{6523B315-69F3-49E9-86DC-21A7C45425A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6523B315-69F3-49E9-86DC-21A7C45425A7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51590C91-0403-49E1-AD49-4EF9B0F93ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

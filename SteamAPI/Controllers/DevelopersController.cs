@@ -125,9 +125,17 @@ namespace SteamAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostDeveloper(DeveloperForCreationDTO developer)
         {
-            var finalDeveloper = _mapper.Map<Developer>(developer);
+            var fDeveloper = _mapper.Map<Developer>(developer);
 
-            await _steamRepo.AddDeveloperAsync(finalDeveloper);
+            foreach (var game in fDeveloper.Games)
+            {
+                if (fDeveloper.CompanyId != game.CompanyId)
+                {
+                    return BadRequest("Los juegos han de ser de la misma compañía que el desarrollador.");
+                }
+            }
+
+            await _steamRepo.AddDeveloperAsync(fDeveloper);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
@@ -151,6 +159,10 @@ namespace SteamAPI.Controllers
 
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
 
+            if (dev.CompanyId != game.CompanyId)
+            {
+                return BadRequest("El juego y el desarrollador han de ser de la misma compañía");
+            }
 
             await _steamRepo.AddGameToDev(dev, game);
             await _steamRepo.SaveChangesAsync();

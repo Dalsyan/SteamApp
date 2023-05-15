@@ -152,9 +152,21 @@ namespace SteamAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostServer(ServerForCreationDTO Server)
         {
-            var finalServer = _mapper.Map<Server>(Server);
+            var fServer = _mapper.Map<Server>(Server);
 
-            await _steamRepo.AddServerAsync(finalServer);
+            var game = await _steamRepo.GetGameAsync(Server.GameId);
+
+            if (!game.HasOnline)
+            {
+                return BadRequest("Para añadir un servidor a un juego, este tiene que tener Online");
+            }
+
+            if (game.CompanyId != fServer.CompanyId)
+            {
+                return BadRequest("El juego del servidor ha de pertenecer a la misma compañía que el servidor");
+            }
+
+            await _steamRepo.AddServerAsync(fServer);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

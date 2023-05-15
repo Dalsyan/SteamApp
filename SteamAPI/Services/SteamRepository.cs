@@ -213,12 +213,61 @@ namespace SteamAPI.Services
                 await transaction.RollbackAsync();
             }
         }
+        public async Task AddScoreToGame(Game game, User user, Score score)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                game.Scores.Add(score);
+                user.Scores.Add(score);
+                score.Games.Add(game);
+                score.Users.Add(user);
+
+                if (game.Users == null)
+                {
+                    
+                    game.Score = score.ScoreV;
+                }
+                else
+                {
+                    game.Score = (game.Score + score.ScoreV) / game.Users.Count();
+                }
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
 
         public async Task<IEnumerable<Game?>> GameLike(string name)
         {
             return await _context.Games
                 .Where(g => g.Title.Contains(name))
                 .ToListAsync();
+        }
+        public async Task<Score> AddScoreAsync(Score score)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            var scores = await _context.Scores.ToListAsync();
+
+            try
+            {
+                _context.Scores.Add(score);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
+            return score;
         }
         #endregion
 

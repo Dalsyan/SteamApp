@@ -346,6 +346,34 @@ namespace SteamAPI.Controllers
 
             return NoContent();
         }
+
+        // POST: api/games/5/scores
+        [HttpPost("{id}/scores")]
+        public async Task<ActionResult> PostGameScore(int id, int userId, float score)
+        {
+            if (!await _steamRepo.GameExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games.AsTracking()
+                .Include(g =>g.Users)
+                .FirstOrDefaultAsync(g => g.GameId == id);
+
+            if (!await _steamRepo.UserExistsAsync(userId))
+            {
+                return NotFound();
+            }
+            var user = await _steamRepo.GetContext().Users.AsTracking()
+                .Include(u => u.Games)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            var fScore = await _steamRepo.AddScoreAsync(_mapper.Map<Score>(score));
+
+            await _steamRepo.AddScoreToGame(game, user, fScore);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
         #endregion
 
         #region DELETE

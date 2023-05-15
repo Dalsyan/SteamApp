@@ -47,25 +47,25 @@ namespace SteamAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GenreDTO>> GetGenre(int id)
         {
-            var developer = await _steamRepo.GetGenreAsync(id);
-            if (developer == null) 
+            var genre = await _steamRepo.GetGenreAsync(id);
+            if (genre == null) 
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GenreDTO>(developer));
+            return Ok(_mapper.Map<GenreDTO>(genre));
         }
 
         [HttpGet("{id}/base")]
         public async Task<ActionResult<GenreBaseDTO>> GetGenreBase(int id)
         {
-            var developer = await _steamRepo.GetGenreAsync(id);
-            if (developer == null)
+            var genre = await _steamRepo.GetGenreAsync(id);
+            if (genre == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GenreBaseDTO>(developer));
+            return Ok(_mapper.Map<GenreBaseDTO>(genre));
         }
         #endregion
 
@@ -123,11 +123,11 @@ namespace SteamAPI.Controllers
 
         // POST: api/genres
         [HttpPost]
-        public async Task<ActionResult> PostGenre(GenreForCreationDTO developer)
+        public async Task<ActionResult> PostGenre(GenreForCreationDTO genre)
         {
-            var finalGenre = _mapper.Map<Genre>(developer);
+            var fGenre = _mapper.Map<Genre>(genre);
 
-            await _steamRepo.AddGenreAsync(finalGenre);
+            await _steamRepo.AddGenreAsync(fGenre);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
@@ -135,14 +135,14 @@ namespace SteamAPI.Controllers
 
         // POST: api/genres/1/games
         [HttpPost("{id}/games")]
-        public async Task<ActionResult> PostDevGame(int id, int gameId)
+        public async Task<ActionResult> PostGenreGame(int id, int gameId)
         {
             if (!await _steamRepo.GenreExistsAsync(id))
             {
                 return NotFound();
             }
 
-            var genre = await _steamRepo.GetContext().Devs.AsTracking().FirstOrDefaultAsync(d => d.DevId == id);
+            var genre = await _steamRepo.GetContext().Genres.AsTracking().FirstOrDefaultAsync(g => g.GenreId == id);
 
             if (!await _steamRepo.GenreExistsAsync(gameId))
             {
@@ -152,7 +152,7 @@ namespace SteamAPI.Controllers
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
 
 
-            await _steamRepo.AddGameToDev(genre, game);
+            await _steamRepo.AddGameToGenre(genre, game);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
@@ -164,13 +164,13 @@ namespace SteamAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenre(int id)
         {
-            var developer = _steamRepo.GetGenreAsync(id).Result;
-            if (developer == null)
+            var genre = _steamRepo.GetGenreAsync(id).Result;
+            if (genre == null)
             {
                 return NotFound();
             }
 
-            await _steamRepo.DeleteGenreAsync(developer);
+            await _steamRepo.DeleteGenreAsync(genre);
             await _steamRepo.SaveChangesAsync();
             return NoContent();
         }

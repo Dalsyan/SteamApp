@@ -145,7 +145,7 @@ namespace SteamAPI.Controllers
 
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
 
-            user.Games.Add(game);
+            await _steamRepo.AddGameToUser(user, game);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();
@@ -155,11 +155,12 @@ namespace SteamAPI.Controllers
         #region POST
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 
+        /* POST: api/users
         // No hay llamada POST porque no tiene sentido crear un usuario sin que exista su cuenta
         // Primero creas la cuenta, y por tanto el usuario
 
         // POST: api/users
-        /*
+        
         [HttpPost]
         public async Task<ActionResult> PostUser(UserForCreationDTO user)
         {
@@ -189,6 +190,11 @@ namespace SteamAPI.Controllers
             }
 
             var game = await _steamRepo.GetContext().Games.AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
+
+            if (game.HasOnline && !user.Account.Premium)
+            {
+                return BadRequest("Para añadir un juego Online a un usuario, este debe ser Premium");
+            }
 
             await _steamRepo.AddGameToUser(user, game);
             await _steamRepo.SaveChangesAsync();

@@ -14,6 +14,8 @@ namespace SteamAPI.Profiles
             CreateMap<Game, GameBaseDTO>();
             CreateMap<GameBaseDTO, Game>();
             CreateMap<Game, GameUsersDTO>();
+            CreateMap<Score, ScoreDTO>();
+            CreateMap<ScoreDTO, Score>();
         }
     }
 }
