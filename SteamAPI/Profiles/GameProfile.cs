@@ -8,14 +8,12 @@ namespace SteamAPI.Profiles
     {
         public GameProfile()
         {
-            CreateMap<Game, GameDTO>();
-            CreateMap<GameForCreationDTO, Game>();
-            CreateMap<GameForUpdateDTO, Game>();
-            CreateMap<Game, GameBaseDTO>();
-            CreateMap<GameBaseDTO, Game>();
+            CreateMap<Game, VoteDTO>();
+            CreateMap<VoteForCreationDTO, Game>();
+            CreateMap<VoteForUpdateDTO, Game>();
+            CreateMap<Game, VoteBaseDTO>();
+            CreateMap<VoteBaseDTO, Game>();
             CreateMap<Game, GameUsersDTO>();
-            CreateMap<Score, ScoreDTO>();
-            CreateMap<ScoreDTO, Score>();
         }
     }
 }

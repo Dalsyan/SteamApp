@@ -8,6 +8,6 @@ namespace SteamAPI.Models.GenreDTOs
     {
         public string GenreName { get; set; }
 
-        public ICollection<GameForCreationDTO?> Games { get; set; } = new List<GameForCreationDTO?>();
+        public ICollection<VoteForCreationDTO?> Games { get; set; } = new List<VoteForCreationDTO?>();
     }
 }

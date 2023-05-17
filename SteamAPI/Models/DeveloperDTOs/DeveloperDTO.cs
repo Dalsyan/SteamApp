@@ -16,6 +16,6 @@ namespace SteamAPI.Models.DeveloperDTOs
 
         public CompanyBaseDTO Company { get; set; }
 
-        public ICollection<GameBaseDTO?> Games { get; set; } = new List<GameBaseDTO?>();
+        public ICollection<VoteBaseDTO?> Games { get; set; } = new List<VoteBaseDTO?>();
     }
 }

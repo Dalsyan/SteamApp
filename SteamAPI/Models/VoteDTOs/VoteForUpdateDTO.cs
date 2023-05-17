@@ -5,13 +5,10 @@ using SteamAPI.Models.ServerDTOs;
 using SteamAPI.Models.UserDTOs;
 using SteamDomain;
 
-namespace SteamAPI.Models.GameDTOs
+namespace SteamAPI.Models.VoteDTOs
 {
     public class VoteForUpdateDTO
     {
-        public string Title { get; set; }
-        public int CompanyId { get; set; }
-
-        public ICollection<GenreBaseDTO?> Genres { get; set; } = new List<GenreBaseDTO?>();
+        public double Score { get; set; }
     }
 }

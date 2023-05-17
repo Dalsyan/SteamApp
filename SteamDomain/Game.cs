@@ -11,7 +11,8 @@ namespace SteamDomain
         public string Title { get; set; }
         public bool HasOnline { get; set; } = false;
         [Range(1, 5)]
-        public float Score { get; set; } = 0;
+        public double Score { get; set; } = 0.0;
+        public int HanVotado { get; set; } = 0;
 
         [ForeignKey("Company")]
         public int CompanyId { get; set; }
@@ -21,6 +22,6 @@ namespace SteamDomain
         public ICollection<Developer> Developers { get; set; } = new List<Developer>();
         public ICollection<Server?> Servers { get; set; } = new List<Server?>();
         public ICollection<User> Users { get; set; } = new List<User>();
-        public ICollection<Score?> Scores { get; set; } = new List<Score?>();
+        public ICollection<Vote> Votes { get;  set; } = new List<Vote>();
     }
 }

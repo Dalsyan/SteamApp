@@ -70,7 +70,7 @@ namespace SteamAPI.Controllers
 
         // GET: api/users/5/games
         [HttpGet("{id}/games")]
-        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetUserGames(int id)
+        public async Task<ActionResult<IEnumerable<VoteBaseDTO>>> GetUserGames(int id)
         {
             if (!await _steamRepo.UserExistsAsync(id))
             {
@@ -84,7 +84,7 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(gameList));
+            return Ok(_mapper.Map<IEnumerable<VoteBaseDTO>>(gameList));
         }
 
         // GET: api/users/5/account
@@ -197,6 +197,53 @@ namespace SteamAPI.Controllers
             }
 
             await _steamRepo.AddGameToUser(user, game);
+            await _steamRepo.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // POST: api/users/1/gameScore
+        [HttpPost("{id}/gameScore")]
+        public async Task<ActionResult> PostUserGameScore(int id, int gameId, double score)
+        {
+            if (!await _steamRepo.UserExistsAsync(id))
+            {
+                return NotFound();
+            }
+            var user = await _steamRepo.GetContext().Users
+                .Include(u => u.Account)
+                .Include(u => u.Votes)
+                .Include(u => u.Games)
+                .AsTracking().FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (!await _steamRepo.GameExistsAsync(gameId))
+            {
+                return NotFound();
+            }
+            var game = await _steamRepo.GetContext().Games
+                .Include(g => g.Votes)
+                .Include(g => g.Users)
+                .AsTracking().FirstOrDefaultAsync(g => g.GameId == gameId);
+
+            var gVotes = game.Votes.ToList();
+            var uVotes = user.Votes.ToList();
+
+            var algo = user.Games.FirstOrDefault(g => g.GameId == gameId);
+            if (algo == null) { return BadRequest("El usuario ha de tener el juego."); }
+
+            foreach (var gV in gVotes)
+            {
+                foreach (var uV in uVotes)
+                {
+                    if (gV.VoteId == uV.VoteId) { return BadRequest("El usuario ya ha votado este juego."); }
+                }
+            }
+
+            Vote fScore = new Vote { Score = score };
+            fScore.Games.Add(game);
+            fScore.Users.Add(user);
+
+            await _steamRepo.AddUserVoteAsync(user, game, fScore);
             await _steamRepo.SaveChangesAsync();
 
             return NoContent();

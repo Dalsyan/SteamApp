@@ -71,10 +71,10 @@ namespace SteamAPI.Controllers
 
         // GET: api/companies/5/games
         [HttpGet("{id}/games")]
-        public async Task<ActionResult<GameBaseDTO>> GetCompanyGames(int id)
+        public async Task<ActionResult<VoteBaseDTO>> GetCompanyGames(int id)
         {
             var games = await _steamRepo.GetCompanyGamesAsync(id);
-            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games));
+            return Ok(_mapper.Map<IEnumerable<VoteBaseDTO>>(games));
         }
 
         // GET: api/companies/5/servers

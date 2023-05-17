@@ -33,23 +33,23 @@ namespace SteamAPI.Controllers
         #region GET
         // GET: api/games
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameDTO>>> GetGames()
+        public async Task<ActionResult<IEnumerable<VoteDTO>>> GetGames()
         {
             var games = await _steamRepo.GetAllGamesAsync();
-            return Ok(_mapper.Map<IEnumerable<GameDTO>>(games));
+            return Ok(_mapper.Map<IEnumerable<VoteDTO>>(games));
         }
 
         // GET: api/games/base
         [HttpGet("base")]
-        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetGamesBase()
+        public async Task<ActionResult<IEnumerable<VoteBaseDTO>>> GetGamesBase()
         {
             var games = await _steamRepo.GetAllGamesBaseAsync();
-            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games));
+            return Ok(_mapper.Map<IEnumerable<VoteBaseDTO>>(games));
         }
 
         // GET: api/games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<GameDTO>> GetGame(int id)
+        public async Task<ActionResult<VoteDTO>> GetGame(int id)
         {
             var game = await _steamRepo.GetGameAsync(id);
             if (game == null)
@@ -57,12 +57,12 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GameDTO>(game));
+            return Ok(_mapper.Map<VoteDTO>(game));
         }
 
         // GET: api/games/5/base
         [HttpGet("{id}/base")]
-        public async Task<ActionResult<GameBaseDTO>> GetGameBase(int id)
+        public async Task<ActionResult<VoteBaseDTO>> GetGameBase(int id)
         {
             var game = await _steamRepo.GetGameBaseAsync(id);
             if (game == null)
@@ -70,7 +70,7 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GameBaseDTO>(game));
+            return Ok(_mapper.Map<VoteBaseDTO>(game));
         }
 
         // GET: api/games/5/company
@@ -147,17 +147,17 @@ namespace SteamAPI.Controllers
 
         // GET: api/games/groupCompany
         [HttpGet("groupCompany")]
-        public async Task<ActionResult<IEnumerable<IGrouping<int, GameBaseDTO>>>> GetGamesGroupByCompany()
+        public async Task<ActionResult<IEnumerable<IGrouping<int, VoteBaseDTO>>>> GetGamesGroupByCompany()
         {
             var games = await _steamRepo.GetAllGamesAsync();
-            var gamesDTOs = _mapper.Map<IEnumerable<GameBaseDTO>>(games);
+            var gamesDTOs = _mapper.Map<IEnumerable<VoteBaseDTO>>(games);
             var groupGameCompany = gamesDTOs.GroupBy(g => g.CompanyId);
             return Ok(groupGameCompany);
         }
 
         // GET: api/games/groupGender
         [HttpGet("groupGender")]
-        public async Task<ActionResult<IEnumerable<IGrouping<string, GameBaseDTO>>>> GetGamesGroupByGenre()
+        public async Task<ActionResult<IEnumerable<IGrouping<string, VoteBaseDTO>>>> GetGamesGroupByGenre()
         {
             var games = await _steamRepo.GetAllGamesAsync();
             var genres = await _steamRepo.GetAllGenresAsync();
@@ -216,7 +216,7 @@ namespace SteamAPI.Controllers
 
         // GET: api/games/Like
         [HttpGet("gamesLike")]
-        public async Task<ActionResult<IEnumerable<GameBaseDTO>>> GetGamesLike(string name)
+        public async Task<ActionResult<IEnumerable<VoteBaseDTO>>> GetGamesLike(string name)
         {
             var games = await _steamRepo.GameLike(name);
 
@@ -225,7 +225,7 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<IEnumerable<GameBaseDTO>>(games).GroupBy(r => r.CompanyId));
+            return Ok(_mapper.Map<IEnumerable<VoteBaseDTO>>(games).GroupBy(r => r.CompanyId));
         }
         #endregion
 
@@ -234,7 +234,7 @@ namespace SteamAPI.Controllers
 
         // PUT: api/games/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutGame(int id, GameForUpdateDTO gameDTO)
+        public async Task<ActionResult> PutGame(int id, VoteForUpdateDTO gameDTO)
         {
             if (!await _steamRepo.GameExistsAsync(id))
             {
@@ -255,7 +255,7 @@ namespace SteamAPI.Controllers
 
         // POST: api/games
         [HttpPost]
-        public async Task<ActionResult> PostGame(GameForCreationDTO game)
+        public async Task<ActionResult> PostGame(VoteForCreationDTO game)
         {
             var fGame = _mapper.Map<Game>(game);
 
@@ -347,33 +347,23 @@ namespace SteamAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/games/5/scores
-        [HttpPost("{id}/scores")]
-        public async Task<ActionResult> PostGameScore(int id, int userId, float score)
-        {
-            if (!await _steamRepo.GameExistsAsync(id))
-            {
-                return NotFound();
-            }
-            var game = await _steamRepo.GetContext().Games.AsTracking()
-                .Include(g =>g.Users)
-                .FirstOrDefaultAsync(g => g.GameId == id);
+        //// POST: api/games/5/scores
+        //[HttpPost("{id}/scores")]
+        //public async Task<ActionResult> PostGameScore(int id, float score)
+        //{
+        //    if (!await _steamRepo.GameExistsAsync(id))
+        //    {
+        //        return NotFound();
+        //    }
+        //    var game = await _steamRepo.GetContext().Games.AsTracking()
+        //        .Include(g =>g.Users)
+        //        .FirstOrDefaultAsync(g => g.GameId == id);
 
-            if (!await _steamRepo.UserExistsAsync(userId))
-            {
-                return NotFound();
-            }
-            var user = await _steamRepo.GetContext().Users.AsTracking()
-                .Include(u => u.Games)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+        //    await _steamRepo.AddScoreAsync(game, score);
+        //    await _steamRepo.SaveChangesAsync();
 
-            var fScore = await _steamRepo.AddScoreAsync(_mapper.Map<Score>(score));
-
-            await _steamRepo.AddScoreToGame(game, user, fScore);
-            await _steamRepo.SaveChangesAsync();
-
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
         #endregion
 
         #region DELETE

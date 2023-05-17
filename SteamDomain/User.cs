@@ -13,6 +13,6 @@ namespace SteamDomain
         public Account Account { get; set; }
 
         public ICollection<Game> Games { get; set; } = new List<Game>();
-        public ICollection<Score?> Scores { get; set; } = new List<Score?>();
+        public ICollection<Vote> Votes { get; set; } = new List<Vote>();
     }
 }

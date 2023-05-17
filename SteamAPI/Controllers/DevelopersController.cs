@@ -91,7 +91,7 @@ namespace SteamAPI.Controllers
 
         // PUT: api/developers/5/games
         [HttpPut("{id}/games")]
-        public async Task<ActionResult> PutDeveloperGame(int id, GameForCreationDTO game)
+        public async Task<ActionResult> PutDeveloperGame(int id, VoteForCreationDTO game)
         {
             if (!await _steamRepo.DeveloperExistsAsync(id))
             {

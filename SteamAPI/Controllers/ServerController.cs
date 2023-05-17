@@ -71,7 +71,7 @@ namespace SteamAPI.Controllers
 
         // GET: api/servers/5/game
         [HttpGet("{id}/game")]
-        public async Task<ActionResult<GameBaseDTO>> GetServerGame(int id)
+        public async Task<ActionResult<VoteBaseDTO>> GetServerGame(int id)
         {
             if (!await _steamRepo.ServerExistsAsync(id))
             {
@@ -84,7 +84,7 @@ namespace SteamAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<GameBaseDTO>(game));
+            return Ok(_mapper.Map<VoteBaseDTO>(game));
         }
 
         // GET: api/servers/5/country

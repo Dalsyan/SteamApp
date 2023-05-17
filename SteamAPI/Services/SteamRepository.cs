@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SteamAPI.Models;
 using SteamAPI.Models.AccountDTOs;
@@ -213,61 +214,12 @@ namespace SteamAPI.Services
                 await transaction.RollbackAsync();
             }
         }
-        public async Task AddScoreToGame(Game game, User user, Score score)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                game.Scores.Add(score);
-                user.Scores.Add(score);
-                score.Games.Add(game);
-                score.Users.Add(user);
-
-                if (game.Users == null)
-                {
-                    
-                    game.Score = score.ScoreV;
-                }
-                else
-                {
-                    game.Score = (game.Score + score.ScoreV) / game.Users.Count();
-                }
-                await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-            }
-        }
 
         public async Task<IEnumerable<Game?>> GameLike(string name)
         {
             return await _context.Games
                 .Where(g => g.Title.Contains(name))
                 .ToListAsync();
-        }
-        public async Task<Score> AddScoreAsync(Score score)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            var scores = await _context.Scores.ToListAsync();
-
-            try
-            {
-                _context.Scores.Add(score);
-                await _context.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-            }
-
-            return score;
         }
         #endregion
 
@@ -445,6 +397,45 @@ namespace SteamAPI.Services
             {
                 game.Users.Add(user);
                 user.Games.Add(game);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
+        public async Task AddUserVoteAsync(User user, Game game, Vote score)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                game.HanVotado++;
+                if (game.Score == 0.0) { game.Score = score.Score; }
+                else { game.Score = (game.Score + score.Score) / game.HanVotado; }
+                game.Votes.Add(score);
+                user.Votes.Add(score);
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+        }
+
+        public async Task MakeUserPremiumAsync(User user)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                user.Account.Premium = true;
 
                 await _context.SaveChangesAsync();
 
@@ -937,6 +928,26 @@ namespace SteamAPI.Services
                 await transaction.RollbackAsync();
             }
         }
+        #endregion
+
+        #region Score
+        //public async Task AddScoreAsync(Game game, float score)
+        //{ 
+        //    using var transaction = await _context.Database.BeginTransactionAsync();
+
+        //    try
+        //    {
+        //        game.HanVotado++;
+        //        game.Score = (game.Score + score) / game.HanVotado;
+
+        //        await _context.SaveChangesAsync();
+        //        await transaction.CommitAsync();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        await transaction.RollbackAsync();
+        //    }
+        //}
         #endregion
     }
 }

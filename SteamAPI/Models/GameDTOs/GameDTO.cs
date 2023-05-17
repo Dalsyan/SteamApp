@@ -7,7 +7,7 @@ using SteamDomain;
 
 namespace SteamAPI.Models.GameDTOs
 {
-    public class GameDTO
+    public class VoteDTO
     {
         public int GameId { get; set; }
         public string Title { get; set; }

@@ -91,7 +91,7 @@ namespace SteamAPI.Controllers
 
         // PUT: api/genres/5/games
         [HttpPut("{id}/games")]
-        public async Task<ActionResult> PutGenreGame(int id, GameForCreationDTO game)
+        public async Task<ActionResult> PutGenreGame(int id, VoteForCreationDTO game)
         {
             if (!await _steamRepo.GenreExistsAsync(id))
             {

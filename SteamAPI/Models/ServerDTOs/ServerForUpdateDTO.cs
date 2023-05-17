@@ -1,9 +1,10 @@
-﻿namespace SteamAPI.Models.ServerDTOs
+﻿using SteamAPI.Models.GameDTOs;
+using SteamAPI.Models.UserDTOs;
+
+namespace SteamAPI.Models.ServerDTOs
 {
     public class ServerForUpdateDTO
     {
-        public int CompanyId { get; set; }
-        public int CountryId { get; set; }
-        public int GameId { get; set; }
+
     }
 }

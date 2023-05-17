@@ -13,7 +13,7 @@ namespace SteamData
         public DbSet<Developer> Devs { get; set; }
         public DbSet<Server> Servers { get; set; }
         public DbSet<Genre> Genres { get; set; }
-        public DbSet<Score> Scores { get; set; }
+        public DbSet<Vote> Votes { get; set; }
 
         public SteamContext()
         {

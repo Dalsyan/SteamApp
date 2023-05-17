@@ -8,7 +8,9 @@ namespace SteamAPI.Models.UserDTOs
     {
         public int UserId { get; set; }
         public string Nickname { get; set; }
+        public bool HasPremium { get; set; }
+
         public AccountBaseDTO Account { get; set; }
-        public ICollection<GameBaseDTO?> Games { get; set; } = new List<GameBaseDTO?>();
+        public ICollection<VoteBaseDTO?> Games { get; set; } = new List<VoteBaseDTO?>();
     }
 }
